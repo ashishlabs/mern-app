@@ -22,7 +22,7 @@ export default function Signup() {
     setError("");
 
     try {
-      const response = await fetch("http://localhost:5000/api/v1/auth/signup", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/signup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

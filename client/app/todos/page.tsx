@@ -38,7 +38,7 @@ export default function Todos() {
             }
 
             try {
-                const response = await fetch(`http://localhost:5000/api/v1/todos?userId=${userId}`, {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/todos?userId=${userId}`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -71,8 +71,8 @@ export default function Todos() {
         }
 
         const url = todoToEdit
-            ? `http://localhost:5000/api/v1/todos/${todoToEdit._id}`
-            : "http://localhost:5000/api/v1/todos";
+            ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/todos/${todoToEdit._id}`
+            : `${process.env.NEXT_PUBLIC_API_BASE_URL}/todos`;
         const method = todoToEdit ? "PUT" : "POST";
 
         try {
@@ -115,7 +115,7 @@ export default function Todos() {
         }
 
         try {
-            const response = await fetch(`http://localhost:5000/api/v1/todos/${todoId}/status`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/todos/${todoId}/status`, {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",
@@ -146,7 +146,7 @@ export default function Todos() {
         }
 
         try {
-            const response = await fetch(`http://localhost:5000/api/v1/todos/${todoToDelete}`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/todos/${todoToDelete}`, {
                 method: "DELETE",
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -188,7 +188,7 @@ export default function Todos() {
         }
 
         try {
-            const response = await fetch(`http://localhost:5000/api/v1/todos/${userId}/${todoId}`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/todos/${userId}/${todoId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },

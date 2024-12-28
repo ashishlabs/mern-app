@@ -1,0 +1,15 @@
+export const messages = {
+  USER_EXISTS: "User already exists",
+  USER_CREATED: "User created successfully",
+  USER_NOT_FOUND: "User not found",
+  INVALID_CREDENTIALS: "Invalid credentials",
+  LOGIN_SUCCESSFUL: "Login successful",
+  ERROR_OCCURRED: "Something went wrong",
+  TODO_CREATED: "Todo created successfully",
+  TODOS_FETCHED: "Todos fetched successfully",
+  TODO_UPDATED: "Todo updated successfully",
+  TODO_DELETED: "Todo deleted successfully",
+  TODO_NOT_FOUND: "Todo not found",
+  TODO_STATUS_UPDATED: "Todo status updated successfully",
+  TODO_FETCHED: "Todo fetched successfully",
+};

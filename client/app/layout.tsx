@@ -2,7 +2,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronLeft, faChevronRight, faList, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
+import { faChevronLeft, faChevronRight, faList, faMusic, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
 import { useRouter } from "next/navigation";
 import "./globals.css"; 
 
@@ -47,6 +47,10 @@ export default function Layout({ children, showSidebar = true }: LayoutProps) {
                     <Link href="/todos" className="block py-2 px-4 rounded hover:bg-gray-700 flex items-center">
                       <FontAwesomeIcon icon={faList} className="mr-2" />
                       <span className={`${isCollapsed ? "hidden" : "block"}`}>Todo List</span>
+                    </Link>
+                    <Link href="/playlist" className="block py-2 px-4 rounded hover:bg-gray-700 flex items-center">
+                      <FontAwesomeIcon icon={faMusic} className="mr-2" />
+                      <span className={`${isCollapsed ? "hidden" : "block"}`}>Songs List</span>
                     </Link>
                   </li>
                 </ul>

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createTodo, readTodos, updateTodo, deleteTodo, updateTodoStatus, getTodoById } from "../controllers/todo.controller";
+import { createTodo, readTodos, updateTodo, deleteTodo, updateTodoStatus, getTodoById, searchTodos, addTag, getTags } from "../controllers/todo.controller";
 
 const router = Router();
 
@@ -20,5 +20,15 @@ router.patch("/:id/status", updateTodoStatus);
 
 // Delete Todo
 router.delete("/:id", deleteTodo);
+
+//Search Todo
+router.get("/search", searchTodos);
+
+//Add Tags
+router.post("/tags", addTag);
+
+//Get Tags
+router.get("/tags", getTags); 
+
 
 export default router;

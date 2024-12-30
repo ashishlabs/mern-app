@@ -6,6 +6,7 @@ import rateLimit from "express-rate-limit";
 import connectDB from "./config/db"; // Import the connection logic
 import authRoutes from "./routes/auth.routes"; // Import auth routes
 import todoRoutes from "./routes/todo.routes"; // Import todo routes
+import musicRoutes from "./routes/music.routes"; // Import music routes
 
 // Initialize dotenv
 dotenv.config();
@@ -13,7 +14,14 @@ dotenv.config();
 // Set up Express app
 const app = express();
 app.use(express.json({ limit: '10kb' })); // Limit the size of the request body
-app.use(cors());
+
+// Configure CORS to allow all origins
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE','PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization','Userid']
+}));
+
 app.use(helmet()); // Use Helmet to set various HTTP headers for security
 
 // Rate limiting
@@ -38,6 +46,8 @@ app.get("/", (req: Request, res: Response) => {
 // Use versioned routes
 app.use(`/api/${apiVersion}/auth`, authRoutes);
 app.use(`/api/${apiVersion}/todos`, todoRoutes);
+app.use(`/api/${apiVersion}/music`, musicRoutes);
+
 
 // Start server
 const PORT = process.env.PORT || 5000;

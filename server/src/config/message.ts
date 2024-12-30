@@ -12,4 +12,13 @@ export const messages = {
   TODO_NOT_FOUND: "Todo not found",
   TODO_STATUS_UPDATED: "Todo status updated successfully",
   TODO_FETCHED: "Todo fetched successfully",
+  TODOS_FOUND: "Todos found successfully",
+  USER_ID_REQUIRED: "User ID is required",
+  QUERY_REQUIRED: "Query parameter is required",
+  TAG_REQUIRED: "Tag is required",
+  TAG_ADDED: "Tag added successfully",
+  TAG_ALREADY_EXISTS: "Tag already exists for this user",
+  TAGS_NOT_FOUND: "No tags found for this user",
+  TAGS_FETCHED: "Tags fetched successfully",
+
 };

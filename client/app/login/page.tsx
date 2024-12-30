@@ -3,10 +3,14 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Layout from "../layout";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
 
@@ -62,16 +66,22 @@ export default function Login() {
               className="mt-1 p-2 w-full border border-gray-300 rounded"
             />
           </div>
-          <div>
+          <div className="relative">
             <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
               className="mt-1 p-2 w-full border border-gray-300 rounded"
             />
+            <div
+              className="absolute inset-y-0 right-0 pr-3 top-[20px] flex items-center cursor-pointer"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? <FontAwesomeIcon icon={faEyeSlash as IconProp} /> : <FontAwesomeIcon icon={faEye as IconProp} />}
+            </div>
           </div>
           <button type="submit" className="w-full py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-700">
             Login

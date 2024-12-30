@@ -1,12 +1,13 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, JSX } from "react";
 import { useRouter } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash, faEdit, faTimes, faClock, faExclamationCircle, faExclamationTriangle, faArrowDown, faSearch } from "@fortawesome/free-solid-svg-icons";
+import { faTrash, faEdit, faTimes, faClock, faExclamationCircle, faExclamationTriangle, faArrowDown, faSearch, faArrowCircleDown } from "@fortawesome/free-solid-svg-icons";
 import Modal from "../../components/Modal";
 import ConfirmationModal from "../../components/ConfirmationModal";
 import Layout from "../layout";
-import Autosuggest from "react-autosuggest";
+import TodoList from "@/components/todo/TodoList";
+import TodoForm from "@/components/todo/TodoForm";
 
 interface Todo {
     _id: string;
@@ -16,9 +17,10 @@ interface Todo {
     priority: string;
     tags: string[];
     userId: string;
+    createdDate: string;
+    dueDate: string;
 }
 
-const suggestions = ["Work", "Personal", "Urgent", "Home", "Shopping"]; // Example suggestions
 
 export default function Todos() {
     const [todos, setTodos] = useState<Todo[]>([]);
@@ -39,6 +41,7 @@ export default function Todos() {
     const [filterStatus, setFilterStatus] = useState("");
     const [sortOption, setSortOption] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
+    const [dueDate, setDueDate] = useState("");
     const router = useRouter();
     const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
@@ -163,7 +166,7 @@ export default function Todos() {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${token}`,
                 },
-                body: JSON.stringify({ title, description, userId, status, priority, tags }),
+                body: JSON.stringify({ title, description, userId, status, priority, tags,dueDate }),
             });
 
             if (!response.ok) {
@@ -184,6 +187,7 @@ export default function Todos() {
             setPriority("medium");
             setTags([]);
             setTodoToEdit(null);
+            setError('');
         } catch (error) {
             setError(`Failed to ${todoToEdit ? "update" : "create"} todo`);
             console.error(`${todoToEdit ? "Update" : "Create"} todo error:`, error);
@@ -249,7 +253,7 @@ export default function Todos() {
         }
     };
 
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
+    const handleKeyDown = (e: React.KeyboardEvent<Element>) => {
         if (e.key === "Enter") {
             e.preventDefault();
         }
@@ -268,18 +272,18 @@ export default function Todos() {
         }
     };
 
-    const getPriorityIcon = (priority: string) => {
-        switch (priority) {
-            case "high":
-                return <FontAwesomeIcon icon={faExclamationCircle} className="text-red-500 ml-2" title="High Priority" />;
-            case "medium":
-                return <FontAwesomeIcon icon={faExclamationTriangle} className="text-yellow-500 ml-2" title="Medium Priority" />;
-            case "low":
-                return <FontAwesomeIcon icon={faArrowDown} className="text-green-500 ml-2" title="Low Priority" />;
-            default:
-                return null;
-        }
-    };
+    const getPriorityIcon = (priority: string): JSX.Element => {
+            switch (priority) {
+                case "high":
+                    return <FontAwesomeIcon icon={faExclamationCircle} className="text-red-500 ml-2" title="High Priority" />;
+                case "medium":
+                    return <FontAwesomeIcon icon={faExclamationTriangle} className="text-yellow-500 ml-2" title="Medium Priority" />;
+                case "low":
+                    return <FontAwesomeIcon icon={faArrowCircleDown} className="text-green-500 ml-2" title="Low Priority" />;
+                default:
+                    return <span className="inline-block w-3 h-3 bg-gray-500 rounded-full mr-2"></span>;
+            }
+        };
 
     const openEditModal = async (todoId: string) => {
         const token = localStorage.getItem("token");
@@ -314,7 +318,7 @@ export default function Todos() {
         }
     };
 
-    const handleTagInputChange = (e: React.ChangeEvent<HTMLInputElement>, { newValue }: { newValue: string }) => {
+    const handleTagInputChange = (event: React.FormEvent<HTMLElement>, { newValue }: { newValue: string }) => {
         setTagInput(newValue);
     };
 
@@ -525,178 +529,48 @@ export default function Todos() {
                                     </button>
                                 </div>
                             </div>
-                            <ul className="space-y-4">
-                                {todos.map((todo) => (
-                                    <li key={todo._id} className="p-4 bg-white shadow-md rounded relative group">
-                                        <input
-                                            type="checkbox"
-                                            checked={todo.status === "completed"}
-                                            onChange={() =>
-                                                handleStatusChange(
-                                                    todo._id,
-                                                    todo.status === "completed" ? "in-progress" : "completed"
-                                                )
-                                            }
-                                            className="form-checkbox h-5 w-5 text-blue-600 absolute top-[20px] left-[16px]"
-                                        />
-                                        <FontAwesomeIcon
-                                            icon={faTrash}
-                                            onClick={() => {
-                                                setTodoToDelete(todo._id);
-                                                setIsConfirmationModalOpen(true);
-                                            }}
-                                            className="absolute top-[20px] right-[16px] text-red-500 hover:text-red-700 hidden group-hover:block cursor-pointer"
-                                        />
-                                        <FontAwesomeIcon
-                                            icon={faEdit}
-                                            onClick={() => openEditModal(todo._id)}
-                                            className="absolute top-[20px] right-[50px] text-blue-500 hover:text-blue-700 hidden group-hover:block cursor-pointer"
-                                        />
-                                        <div className="ml-8">
-                                            <h2 className="text-xl font-bold flex items-center">
-                                                {getStatusIndicator(todo.status)}
-                                                {todo.title}
-                                                {getPriorityIcon(todo.priority)}
-                                            </h2>
-                                            <p>{todo.description}</p>
-                                            <div className="flex flex-wrap gap-2 mt-2">
-                                                {todo?.tags?.map((tag, index) => (
-                                                    <span key={index} className="bg-gray-200 px-2 py-1 rounded-full flex items-center">
-                                                        {tag}
-                                                    </span>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    </li>
-                                ))}
-                            </ul>
+                            <TodoList
+                                todos={todos}
+                                handleStatusChange={handleStatusChange}
+                                setTodoToDelete={setTodoToDelete}
+                                setIsConfirmationModalOpen={setIsConfirmationModalOpen}
+                                openEditModal={openEditModal}
+                                getStatusIndicator={getStatusIndicator}
+                                getPriorityIcon={getPriorityIcon}
+                            />
                         </div>
                     )
                 )}
             </div>
 
             <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-                <h2 className="text-xl font-bold mb-4">{todoToEdit ? "Edit Todo" : "Create Todo"}</h2>
-                <form onSubmit={handleCreateOrUpdateTodo} onKeyDown={handleKeyDown}>
-                    <div className="mb-4">
-                        <label htmlFor="title" className="block text-sm font-medium text-gray-700">
-                            Title
-                        </label>
-                        <input
-                            type="text"
-                            id="title"
-                            value={title}
-                            onChange={(e) => setTitle(e.target.value)}
-                            required
-                            className="mt-1 p-2 w-full border border-gray-300 rounded"
-                        />
-                    </div>
-                    <div className="mb-4">
-                        <label htmlFor="description" className="block text-sm font-medium text-gray-700">
-                            Description
-                        </label>
-                        <textarea
-                            id="description"
-                            value={description}
-                            onChange={(e) => setDescription(e.target.value)}
-                            required
-                            className="mt-1 p-2 w-full border border-gray-300 rounded"
-                        />
-                    </div>
-                    <div className="mb-4">
-                        <label htmlFor="status" className="block text-sm font-medium text-gray-700">
-                            Status
-                        </label>
-                        <select
-                            id="status"
-                            value={status}
-                            onChange={(e) => setStatus(e.target.value)}
-                            required
-                            className="mt-1 p-2 w-full border border-gray-300 rounded"
-                        >
-                            <option value="pending">Pending</option>
-                            <option value="in-progress">In Progress</option>
-                            <option value="completed">Completed</option>
-                        </select>
-                    </div>
-                    <div className="mb-4">
-                        <label className="block text-sm font-medium text-gray-700">Priority</label>
-                        <div className="flex space-x-4">
-                            <label className="flex items-center">
-                                <input
-                                    type="radio"
-                                    name="priority"
-                                    value="low"
-                                    checked={priority === "low"}
-                                    onChange={(e) => setPriority(e.target.value)}
-                                    className="form-radio"
-                                />
-                                <span className="ml-2">Low</span>
-                            </label>
-                            <label className="flex items-center">
-                                <input
-                                    type="radio"
-                                    name="priority"
-                                    value="medium"
-                                    checked={priority === "medium"}
-                                    onChange={(e) => setPriority(e.target.value)}
-                                    className="form-radio"
-                                />
-                                <span className="ml-2">Medium</span>
-                            </label>
-                            <label className="flex items-center">
-                                <input
-                                    type="radio"
-                                    name="priority"
-                                    value="high"
-                                    checked={priority === "high"}
-                                    onChange={(e) => setPriority(e.target.value)}
-                                    className="form-radio"
-                                />
-                                <span className="ml-2">High</span>
-                            </label>
-                        </div>
-                    </div>
-                    <div className="mb-4">
-                        <label htmlFor="tags" className="block text-sm font-medium text-gray-700">
-                            Tags
-                        </label>
-                        <Autosuggest
-                            suggestions={suggestionsList}
-                            onSuggestionsFetchRequested={onSuggestionsFetchRequested}
-                            onSuggestionsClearRequested={onSuggestionsClearRequested}
-                            getSuggestionValue={getSuggestionValue}
-                            renderSuggestion={renderSuggestion}
-                            inputProps={{
-                                placeholder: "Add a tag",
-                                value: tagInput,
-                                onChange: handleTagInputChange,
-                                onKeyDown: handleTagAddition,
-                            }}
-                            theme={{
-                                input: "mt-1 p-2 w-full border border-gray-300 rounded",
-                                suggestionsContainer: "absolute z-10 bg-white border border-gray-300 rounded mt-1",
-                                suggestion: "p-2 cursor-pointer",
-                                suggestionHighlighted: "bg-gray-200",
-                            }}
-                        />
-                        <div className="flex flex-wrap gap-2 mt-2">
-                            {tags?.map((tag, index) => (
-                                <span key={index} className="bg-gray-200 px-2 py-1 rounded-full flex items-center">
-                                    {tag}
-                                    <FontAwesomeIcon
-                                        icon={faTimes}
-                                        className="ml-2 cursor-pointer"
-                                        onClick={() => handleTagRemove(tag)}
-                                    />
-                                </span>
-                            ))}
-                        </div>
-                    </div>
-                    <button type="submit" className="w-full py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-700">
-                        {todoToEdit ? "Update Todo" : "Create Todo"}
-                    </button>
-                </form>
+                <TodoForm
+                    todoToEdit={todoToEdit}
+                    title={title}
+                    description={description}
+                    status={status}
+                    priority={priority}
+                    tags={tags}
+                    tagInput={tagInput}
+                    suggestionsList={suggestions}
+                    setTitle={setTitle}
+                    setDescription={setDescription}
+                    setStatus={setStatus}
+                    setPriority={setPriority}
+                    setTags={setTags}
+                    setTagInput={setTagInput}
+                    handleTagRemove={handleTagRemove}
+                    handleTagInputChange={handleTagInputChange}
+                    handleTagAddition={handleTagAddition}
+                    onSuggestionsFetchRequested={onSuggestionsFetchRequested}
+                    onSuggestionsClearRequested={onSuggestionsClearRequested}
+                    getSuggestionValue={getSuggestionValue}
+                    renderSuggestion={renderSuggestion}
+                    handleCreateOrUpdateTodo={handleCreateOrUpdateTodo}
+                    handleKeyDown={handleKeyDown}
+                    dueDate={dueDate}
+                    setDueDate={setDueDate}
+                />
             </Modal>
 
             <ConfirmationModal

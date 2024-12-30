@@ -6,8 +6,8 @@ import logger from "../utils/logger";
 import { messages } from "../config/message";
 import { statusCodes } from "../config/status.code";
 
-export const createTodo = async (req: Request, res: Response): Promise<void> => {
-  const { title, description, userId, status, priority, tags } = req.body;
+export const createTodo = async (req: Request, res: Response, next: Function): Promise<void> => {
+  const { title, description, userId, status, priority, tags, dueDate } = req.body;
 
   try {
     const newTodo = new Todo({
@@ -17,6 +17,8 @@ export const createTodo = async (req: Request, res: Response): Promise<void> => 
       status,
       priority,
       tags,
+      createdDate: new Date(),
+      dueDate,
     });
 
     await newTodo.save();
@@ -25,6 +27,7 @@ export const createTodo = async (req: Request, res: Response): Promise<void> => 
   } catch (error) {
     logger.error("Error creating todo: %o", error);
     sendResponse(res, statusCodes.INTERNAL_SERVER_ERROR, messages.ERROR_OCCURRED);
+    next(error);
   }
 };
 

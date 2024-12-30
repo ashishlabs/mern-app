@@ -7,6 +7,9 @@ import connectDB from "./config/db"; // Import the connection logic
 import authRoutes from "./routes/auth.routes"; // Import auth routes
 import todoRoutes from "./routes/todo.routes"; // Import todo routes
 import musicRoutes from "./routes/music.routes"; // Import music routes
+import "./utils/scheduler"; // Import the scheduler to start it
+import { triggerNotificationsNow } from "./utils/scheduler";
+import notificationRoutes from "./routes/notification.routes";
 
 // Initialize dotenv
 dotenv.config();
@@ -43,10 +46,19 @@ app.get("/", (req: Request, res: Response) => {
   res.json({ message: "Server is running. Welcome to the MERN stack with TypeScript!" });
 });
 
+app.post("/api/trigger-notifications", async (req, res) => {
+  try {
+    await triggerNotificationsNow();
+    res.status(200).json({ message: "Notifications triggered successfully" });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to trigger notifications" });
+  }
+});
 // Use versioned routes
 app.use(`/api/${apiVersion}/auth`, authRoutes);
 app.use(`/api/${apiVersion}/todos`, todoRoutes);
 app.use(`/api/${apiVersion}/music`, musicRoutes);
+app.use(`/api/${apiVersion}/notification`, notificationRoutes);
 
 
 // Start server

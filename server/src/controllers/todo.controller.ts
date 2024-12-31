@@ -86,6 +86,7 @@ export const updateTodo = async (req: Request, res: Response): Promise<void> => 
     status,
     priority,
     tags,
+    dueDate
   } = req.body;
 
   try {
@@ -98,6 +99,7 @@ export const updateTodo = async (req: Request, res: Response): Promise<void> => 
         status,
         priority,
         tags,
+        dueDate
       },
       { new: true }
     );

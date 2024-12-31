@@ -2,12 +2,14 @@
 import { useState, useEffect, useRef, JSX } from "react";
 import { useRouter } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash, faEdit, faTimes, faClock, faExclamationCircle, faExclamationTriangle, faArrowDown, faSearch, faArrowCircleDown } from "@fortawesome/free-solid-svg-icons";
+import { faClock, faExclamationCircle, faExclamationTriangle, faArrowDown, faSearch, faArrowCircleDown, faPlus, faTasks, faList } from "@fortawesome/free-solid-svg-icons";
 import Modal from "../../components/Modal";
 import ConfirmationModal from "../../components/ConfirmationModal";
-import Layout from "../layout";
 import TodoList from "@/components/todo/TodoList";
 import TodoForm from "@/components/todo/TodoForm";
+import Kanban from "@/components/todo/Kanban";
+import HomeLayout from "@/components/home/Home";
+import { useDeviceType } from "@/utils/mobile";
 
 interface Todo {
     _id: string;
@@ -20,7 +22,6 @@ interface Todo {
     createdDate: string;
     dueDate: string;
 }
-
 
 export default function Todos() {
     const [todos, setTodos] = useState<Todo[]>([]);
@@ -46,6 +47,7 @@ export default function Todos() {
     const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
+    const isMobile = useDeviceType();
     const todosPerPage = 10;
 
     useEffect(() => {
@@ -71,7 +73,7 @@ export default function Todos() {
                 clearTimeout(debounceTimeout.current);
             }
         };
-    }, [searchQuery, filterStatus, sortOption]);
+    }, [searchQuery, filterStatus, sortOption, currentPage]);
 
     const fetchTodos = async () => {
         const token = localStorage.getItem("token");
@@ -133,9 +135,6 @@ export default function Todos() {
             setIsLoading(false);
         }
     };
-    const handleSearch = () => {
-        searchTodo(searchQuery);
-    };
 
     const handleFilterStatus = (e: any) => {
         setFilterStatus(e.target.value);
@@ -166,7 +165,7 @@ export default function Todos() {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${token}`,
                 },
-                body: JSON.stringify({ title, description, userId, status, priority, tags,dueDate }),
+                body: JSON.stringify({ title, description, userId, status, priority, tags, dueDate }),
             });
 
             if (!response.ok) {
@@ -273,17 +272,17 @@ export default function Todos() {
     };
 
     const getPriorityIcon = (priority: string): JSX.Element => {
-            switch (priority) {
-                case "high":
-                    return <FontAwesomeIcon icon={faExclamationCircle} className="text-red-500 ml-2" title="High Priority" />;
-                case "medium":
-                    return <FontAwesomeIcon icon={faExclamationTriangle} className="text-yellow-500 ml-2" title="Medium Priority" />;
-                case "low":
-                    return <FontAwesomeIcon icon={faArrowCircleDown} className="text-green-500 ml-2" title="Low Priority" />;
-                default:
-                    return <span className="inline-block w-3 h-3 bg-gray-500 rounded-full mr-2"></span>;
-            }
-        };
+        switch (priority) {
+            case "high":
+                return <FontAwesomeIcon icon={faExclamationCircle} className="text-red-500 ml-2" title="High Priority" />;
+            case "medium":
+                return <FontAwesomeIcon icon={faExclamationTriangle} className="text-yellow-500 ml-2" title="Medium Priority" />;
+            case "low":
+                return <FontAwesomeIcon icon={faArrowCircleDown} className="text-green-500 ml-2" title="Low Priority" />;
+            default:
+                return <span className="inline-block w-3 h-3 bg-gray-500 rounded-full mr-2"></span>;
+        }
+    };
 
     const openEditModal = async (todoId: string) => {
         const token = localStorage.getItem("token");
@@ -411,36 +410,22 @@ export default function Todos() {
     const renderSuggestion = (suggestion: string) => <div>{suggestion}</div>;
 
     return (
-        <Layout>
+        <HomeLayout>
             <div className="flex flex-col p-8 min-h-screen bg-gray-100">
-                <div className="flex justify-between items-center mb-6">
-                    <h1 className="text-3xl font-bold text-gray-800">Todo List</h1>
-                    {todos.length > 0 && (
-                        <button
-                            onClick={() => {
-                                setTodoToEdit(null);
-                                setTitle("");
-                                setDescription("");
-                                setStatus("pending");
-                                setPriority("medium");
-                                setTags([]);
-                                setIsModalOpen(true);
-                                setTagInput("");
-                            }}
-                            className="py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                            Create Todo
-                        </button>
-                    )}
+                <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
+                    <h1 className="text-3xl font-bold text-gray-800 mb-4 sm:mb-0">Todo List</h1>
                 </div>
-                <div className="flex flex-col md:flex-row md:space-x-4 mb-6">
-                    <div className="flex flex-col mb-4 md:mb-0">
+
+                {/* Filter, Sort, and Search */}
+                <div className="flex flex-col sm:flex-row sm:space-x-4 mb-6">
+                    {/* Filter Section */}
+                    <div className="flex flex-col mb-4 sm:mb-0 w-full sm:w-auto">
                         <label htmlFor="filterStatus" className="text-sm font-medium text-gray-700 mb-1">Filter by Status</label>
                         <select
                             id="filterStatus"
                             value={filterStatus}
                             onChange={handleFilterStatus}
-                            className="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-auto"
                         >
                             <option value="">All</option>
                             <option value="pending">Pending</option>
@@ -448,13 +433,15 @@ export default function Todos() {
                             <option value="completed">Completed</option>
                         </select>
                     </div>
-                    <div className="flex flex-col mb-4 md:mb-0">
+
+                    {/* Sort Section */}
+                    <div className="flex flex-col mb-4 sm:mb-0 w-full sm:w-auto">
                         <label htmlFor="sortOption" className="text-sm font-medium text-gray-700 mb-1">Sort by</label>
                         <select
                             id="sortOption"
                             value={sortOption}
                             onChange={handleSortOption}
-                            className="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-auto"
                         >
                             <option value="">Sort By</option>
                             <option value="dueDate">Due Date</option>
@@ -462,7 +449,9 @@ export default function Todos() {
                             <option value="creationDate">Creation Date</option>
                         </select>
                     </div>
-                    <div className="flex flex-col flex-grow">
+
+                    {/* Search Section */}
+                    <div className="flex flex-col flex-grow w-full sm:w-auto">
                         <label htmlFor="searchQuery" className="text-sm font-medium text-gray-700 mb-1">Search</label>
                         <div className="flex">
                             <input
@@ -482,12 +471,8 @@ export default function Todos() {
                         </div>
                     </div>
                 </div>
-                {isLoading && (
-                    <div className="flex justify-center items-center">
-                        <div className="loader"></div>
-                    </div>
-                )}
-                {!isLoading && error && <p className="text-red-500">{error}</p>}
+
+                {/* No Todos Available Message */}
                 {!isLoading && todos.length === 0 ? (
                     <div className="text-center">
                         <p className="mb-4 text-gray-700">No todos available.</p>
@@ -510,6 +495,7 @@ export default function Todos() {
                 ) : (
                     !isLoading && (
                         <div className="w-full">
+                            {/* Pagination */}
                             <div className="flex justify-between items-center mb-4">
                                 <p className="text-gray-700">Showing {todos.length} of {totalCount} todos</p>
                                 <div className="flex space-x-2">
@@ -529,20 +515,47 @@ export default function Todos() {
                                     </button>
                                 </div>
                             </div>
-                            <TodoList
-                                todos={todos}
-                                handleStatusChange={handleStatusChange}
-                                setTodoToDelete={setTodoToDelete}
-                                setIsConfirmationModalOpen={setIsConfirmationModalOpen}
-                                openEditModal={openEditModal}
-                                getStatusIndicator={getStatusIndicator}
-                                getPriorityIcon={getPriorityIcon}
-                            />
+
+                            {/* Todo View (List or Kanban) */}
+                            {isMobile === true ? (
+                                <TodoList
+                                    todos={todos}
+                                    handleStatusChange={handleStatusChange}
+                                    setTodoToDelete={setTodoToDelete}
+                                    setIsConfirmationModalOpen={setIsConfirmationModalOpen}
+                                    openEditModal={openEditModal}
+                                    getStatusIndicator={getStatusIndicator}
+                                    getPriorityIcon={getPriorityIcon}
+                                />
+                            ) : (
+                                <Kanban
+                                    todos={todos}
+                                    handleStatusChange={handleStatusChange}
+                                    handleOnEdit={openEditModal}
+                                    handleOnDelete={setTodoToDelete}
+                                />
+                            )}
+                            <div className="fixed bottom-8 right-8">
+                                <button
+                                    onClick={() => {
+                                        setTodoToEdit(null);
+                                        setTitle("");
+                                        setDescription("");
+                                        setStatus("pending");
+                                        setPriority("medium");
+                                        setTags([]);
+                                        setIsModalOpen(true);
+                                        setTagInput("");
+                                    }}
+                                    className="p-4 bg-blue-500 text-white rounded-full shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                >
+                                    <FontAwesomeIcon icon={faPlus} className="text-2xl" />
+                                </button>
+                            </div>
                         </div>
                     )
                 )}
             </div>
-
             <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
                 <TodoForm
                     todoToEdit={todoToEdit}
@@ -579,6 +592,6 @@ export default function Todos() {
                 onConfirm={handleDeleteTodo}
                 message="Are you sure you want to delete this todo?"
             />
-        </Layout>
+        </HomeLayout>
     );
 }

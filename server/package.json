@@ -22,6 +22,7 @@
     "helmet": "^8.0.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.9.2",
+    "music-metadata": "^10.6.4",
     "node-cron": "^3.0.3",
     "web-push": "^3.6.7",
     "winston": "^3.17.0"

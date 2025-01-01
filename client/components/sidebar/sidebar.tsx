@@ -1,15 +1,23 @@
 "use client";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faList, faMusic, faBars, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faList, faMusic, faBars, faTimes, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("userId");
+    router.push("/login");
   };
 
   return (
@@ -64,6 +72,16 @@ export default function Sidebar() {
             </li>
           </ul>
         </nav>
+         {/* Logout Button */}
+         <div className="p-4 border-t border-gray-700">
+          <button
+            onClick={handleLogout}
+            className="w-full py-2 px-4 bg-red-500 text-white rounded hover:bg-red-700 flex items-center justify-center"
+          >
+            <FontAwesomeIcon icon={faSignOutAlt} className="mr-2" />
+            <span>Logout</span>
+          </button>
+        </div>
       </aside>
 
       {/* Overlay */}

@@ -3,13 +3,13 @@ import dotenv from "dotenv";
 import cors from "cors";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
-import connectDB from "./config/db"; // Import the connection logic
-import authRoutes from "./routes/auth.routes"; // Import auth routes
-import todoRoutes from "./routes/todo.routes"; // Import todo routes
-import musicRoutes from "./routes/music.routes"; // Import music routes
-import "./utils/scheduler"; // Import the scheduler to start it
+import connectDB from "./config/db"; 
+import authRoutes from "./routes/auth/auth.routes"; 
+import todoRoutes from "./routes/todo/todo.routes"; 
+import "./utils/scheduler";
 import { triggerNotificationsNow } from "./utils/scheduler";
-import notificationRoutes from "./routes/notification.routes";
+import notificationRoutes from "./routes/notification/notification.routes";
+import songRoutes from "./routes/songs/song.routes";
 
 // Initialize dotenv
 dotenv.config();
@@ -57,8 +57,8 @@ app.post("/api/trigger-notifications", async (req, res) => {
 // Use versioned routes
 app.use(`/api/${apiVersion}/auth`, authRoutes);
 app.use(`/api/${apiVersion}/todos`, todoRoutes);
-app.use(`/api/${apiVersion}/music`, musicRoutes);
 app.use(`/api/${apiVersion}/notification`, notificationRoutes);
+app.use(`/api/${apiVersion}/songs`, songRoutes);
 
 
 // Start server

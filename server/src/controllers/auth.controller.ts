@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import User, { IUser } from "../models/user.model";
+import User from "../models/user.model";
 import { sendResponse } from "../utils/response";
 import logger from "../utils/logger";
 import { messages } from "../config/message";
@@ -10,7 +10,7 @@ import { statusCodes } from "../config/status.code";
 const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret";
 
 export const signup = async (req: Request, res: Response): Promise<void> => {
-  const { username, email, password } = req.body;
+  const {  email, password } = req.body;
 
   try {
     const existingUser = await User.findOne({ email });
@@ -22,7 +22,6 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
     const hashedPassword = await bcrypt.hash(password, 12);
 
     const newUser = new User({
-      username,
       email,
       password: hashedPassword,
     });

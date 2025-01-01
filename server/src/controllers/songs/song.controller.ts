@@ -2,18 +2,8 @@ import { Request, Response } from 'express';
 import Song from '../../models/songs/song.model';
 import fs from 'fs';
 import path from 'path';
-// Create a new song
-export const createSong = async (req: Request, res: Response) => {
-    const { title, artist, album, genre, duration, coverArt } = req.body;
+const musicDir = path.join(__dirname, "../music");
 
-    try {
-        const newSong = new Song({ title, artist, album, genre, duration, coverArt });
-        await newSong.save();
-        res.status(201).json(newSong);
-    } catch (err) {
-        res.status(400).json({ message: 'Error creating song', error: err });
-    }
-};
 
 // Get all songs
 export const getAllSongs = async (req: Request, res: Response) => {
@@ -43,4 +33,48 @@ export const searchSongs = async (req: Request, res: Response) => {
         res.status(400).json({ message: 'Error searching songs', error: err });
     }
 };
+
+const streamFile = (filePath: string, range: string | undefined, res: Response) => {
+    const stat = fs.statSync(filePath);
+    const fileSize = stat.size;
+  
+    if (range) {
+      const [start, end] = range.replace(/bytes=/, "").split("-").map(Number);
+      if (start >= fileSize) {
+        res.status(416).send(`Requested range not satisfiable: ${start} >= ${fileSize}`);
+        return;
+      }
+      const chunksize = (end || fileSize - 1) - start + 1;
+      const file = fs.createReadStream(filePath, { start, end: end || fileSize - 1 });
+  
+      const headers = {
+        "Content-Range": `bytes ${start}-${end || fileSize - 1}/${fileSize}`,
+        "Accept-Ranges": "bytes",
+        "Content-Length": chunksize,
+        "Content-Type": "audio/mpeg",
+        "Cross-Origin-Resource-Policy": "cross-origin",
+      };
+  
+      res.writeHead(206, headers);
+      file.pipe(res);
+    } else {
+      const headers = {
+        "Content-Length": fileSize,
+        "Content-Type": "audio/mpeg",
+      };
+      res.writeHead(200, headers);
+      fs.createReadStream(filePath).pipe(res);
+    }
+  };
+  
+  export const streamMusic = (req: Request, res: Response): void => {
+    const filePath = path.join(musicDir, req.params.filename);
+  
+    if (!fs.existsSync(filePath)) {
+      res.status(404).send("File not found");
+      return;
+    }
+  
+    streamFile(filePath, req.headers.range, res);
+  };
 

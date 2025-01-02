@@ -1,24 +1,34 @@
+// models/song.model.ts
 import mongoose, { Schema, Document } from 'mongoose';
 
-export interface ISong extends Document {
-  title: string;
-  artist: string;
-  album: string;
-  genre: string;
-  duration: number; // in seconds
-  coverArt: string; // URL or file path to album art
-  audioFile:any;
+// Define the Song interface
+interface Song extends Document {
+    id: string;
+    title: string;
+    artist: string;
+    album: string;
+    genre: string;
+    duration: number;
+    coverArt: string | null;
+    thumbnail: string | null;
+    url: string;
+    filename:string;
 }
 
+// Define the Song schema
 const SongSchema: Schema = new Schema({
-  title: { type: String, required: true },
-  artist: { type: String, required: true },
-  album: { type: String, required: true },
-  genre: { type: String, required: true },
-  duration: { type: Number, required: true },
-  coverArt: { type: String, required: true },
-  audioFile: { type: String },
+    title: { type: String, required: true },
+    artist: { type: String},
+    album: { type: String},
+    genre: { type: String},
+    duration: { type: Number},
+    coverArt: { type: String},
+    thumbnail: { type: String },
+    url: { type: String },
+    filename: { type: String },
 });
 
-const Song = mongoose.model<ISong>('Song', SongSchema);
-export default Song;
+// Create a Mongoose model from the schema
+const SongModel = mongoose.model<Song>('Song', SongSchema);
+
+export default SongModel;

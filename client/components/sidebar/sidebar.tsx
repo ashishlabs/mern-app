@@ -5,6 +5,7 @@ import { faList, faMusic, faBars, faTimes, faSignOutAlt } from "@fortawesome/fre
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { ROUTES } from "@/utils/routes";
 
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -17,7 +18,7 @@ export default function Sidebar() {
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("userId");
-    router.push("/login");
+    router.push(ROUTES.LOGIN);
   };
 
   return (

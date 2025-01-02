@@ -2,10 +2,10 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import Layout from "../layout";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { ROUTES } from "@/utils/routes";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -17,7 +17,7 @@ export default function Login() {
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
-      router.push("/todos");
+      router.push(ROUTES.DASHBOARD);
     }
   }, [router]);
 
@@ -42,7 +42,7 @@ export default function Login() {
       // Save token and userId to localStorage
       localStorage.setItem("token", jsonData.data.token);
       localStorage.setItem("userId", jsonData.data.user._id);
-      router.push("/todos");
+      router.push(ROUTES.DASHBOARD);
     } catch (error) {
       setError("Login failed. Please check your credentials.");
       console.error("Login error:", error);
@@ -87,7 +87,7 @@ export default function Login() {
         </button>
         <div className="text-center mt-4">
           <Link href="/signup" className="text-blue-500 hover:underline">
-            Don't have an account? Sign up
+            Don&apos;t have an account? Sign up
           </Link>
         </div>
       </form>

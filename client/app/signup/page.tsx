@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import { ROUTES } from "@/utils/routes";
 
 export default function Signup() {
   const [email, setEmail] = useState("");
@@ -15,7 +16,7 @@ export default function Signup() {
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
-      router.push("/todos");
+      router.push(ROUTES.SIGNUP);
     }
   }, [router]);
 
@@ -40,7 +41,7 @@ export default function Signup() {
       // Save token and userId to localStorage
       localStorage.setItem("token", jsonData.data.token);
       localStorage.setItem("userId", jsonData.data.user._id);
-      router.push("/todos");
+      router.push(ROUTES.SIGNUP);
     } catch (error) {
       setError("Signup failed. Please check your details.");
       console.error("Signup error:", error);
@@ -89,7 +90,7 @@ export default function Signup() {
             Signup
           </button>
           <div className="text-center mt-4">
-            <Link href="/login" className="text-blue-500 hover:underline">
+            <Link href={ROUTES.LOGIN} className="text-blue-500 hover:underline">
               Back to Login
             </Link>
           </div>

@@ -2,7 +2,10 @@
 import { useState, useEffect, useRef, JSX } from "react";
 import { useRouter } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faClock, faExclamationCircle, faExclamationTriangle, faArrowDown, faSearch, faArrowCircleDown, faPlus, faTasks, faList } from "@fortawesome/free-solid-svg-icons";
+import {
+    faClock, faExclamationCircle, faExclamationTriangle,
+    faSearch, faArrowCircleDown, faPlus
+} from "@fortawesome/free-solid-svg-icons";
 import Modal from "../../components/Modal";
 import ConfirmationModal from "../../components/ConfirmationModal";
 import TodoList from "@/components/todo/TodoList";
@@ -10,6 +13,7 @@ import TodoForm from "@/components/todo/TodoForm";
 import Kanban from "@/components/todo/Kanban";
 import HomeLayout from "@/components/home/Home";
 import { useDeviceType } from "@/utils/mobile";
+import { ROUTES } from "@/utils/routes";
 
 interface Todo {
     _id: string;
@@ -25,7 +29,6 @@ interface Todo {
 
 export default function Todos() {
     const [todos, setTodos] = useState<Todo[]>([]);
-    const [error, setError] = useState("");
     const [isLoading, setIsLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
@@ -38,7 +41,6 @@ export default function Todos() {
     const [tags, setTags] = useState<string[]>([]);
     const [tagInput, setTagInput] = useState("");
     const [suggestions, setSuggestions] = useState<string[]>([]);
-    const [suggestionsList, setSuggestionsList] = useState<string[]>(suggestions);
     const [filterStatus, setFilterStatus] = useState("");
     const [sortOption, setSortOption] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
@@ -79,7 +81,7 @@ export default function Todos() {
         const token = localStorage.getItem("token");
         const userId = localStorage.getItem("userId");
         if (!token || !userId) {
-            router.push("/login");
+            router.push(ROUTES.LOGIN);
             return;
         }
 
@@ -99,7 +101,6 @@ export default function Todos() {
             setTodos(Array.isArray(result.data.todos) ? result.data.todos : []);
             setTotalCount(result.data.totalCount);
         } catch (error) {
-            setError("Failed to load todos");
             console.error("Fetch todos error:", error);
         } finally {
             setIsLoading(false);
@@ -110,7 +111,7 @@ export default function Todos() {
         const token = localStorage.getItem("token");
         const userId = localStorage.getItem("userId");
         if (!token || !userId) {
-            router.push("/login");
+            router.push(ROUTES.LOGIN);
             return;
         }
 
@@ -129,7 +130,6 @@ export default function Todos() {
             const result = await response.json();
             setTodos(Array.isArray(result.data) ? result.data : []);
         } catch (error) {
-            setError("Failed to load todos");
             console.error("Fetch todos error:", error);
         } finally {
             setIsLoading(false);
@@ -149,7 +149,7 @@ export default function Todos() {
         const token = localStorage.getItem("token");
         const userId = localStorage.getItem("userId");
         if (!token || !userId) {
-            router.push("/login");
+            router.push(ROUTES.LOGIN);
             return;
         }
 
@@ -186,9 +186,7 @@ export default function Todos() {
             setPriority("medium");
             setTags([]);
             setTodoToEdit(null);
-            setError('');
         } catch (error) {
-            setError(`Failed to ${todoToEdit ? "update" : "create"} todo`);
             console.error(`${todoToEdit ? "Update" : "Create"} todo error:`, error);
         }
     };
@@ -196,7 +194,7 @@ export default function Todos() {
     const handleStatusChange = async (todoId: string, newStatus: string) => {
         const token = localStorage.getItem("token");
         if (!token) {
-            router.push("/login");
+            router.push(ROUTES.LOGIN);
             return;
         }
 
@@ -217,7 +215,6 @@ export default function Todos() {
             const updatedTodo = await response.json();
             setTodos(todos.map(todo => (todo._id === todoId ? { ...todo, status: updatedTodo.data.status } : todo)));
         } catch (error) {
-            setError("Failed to update todo status");
             console.error("Update todo status error:", error);
         }
     };
@@ -227,7 +224,7 @@ export default function Todos() {
 
         const token = localStorage.getItem("token");
         if (!token) {
-            router.push("/login");
+            router.push(ROUTES.LOGIN);
             return;
         }
 
@@ -247,7 +244,6 @@ export default function Todos() {
             setTodoToDelete(null);
             setIsConfirmationModalOpen(false);
         } catch (error) {
-            setError("Failed to delete todo");
             console.error("Delete todo error:", error);
         }
     };
@@ -288,7 +284,7 @@ export default function Todos() {
         const token = localStorage.getItem("token");
         const userId = localStorage.getItem("userId");
         if (!token) {
-            router.push("/login");
+            router.push(ROUTES.LOGIN);
             return;
         }
 
@@ -312,7 +308,6 @@ export default function Todos() {
             setTags(result.data.tags);
             setIsModalOpen(true);
         } catch (error) {
-            setError("Failed to load todo for editing");
             console.error("Fetch todo error:", error);
         }
     };
@@ -342,7 +337,7 @@ export default function Todos() {
         const token = localStorage.getItem("token");
         const userId = localStorage.getItem("userId");
         if (!token || !userId) {
-            router.push("/login");
+            router.push(ROUTES.LOGIN);
             return;
         }
 
@@ -372,7 +367,7 @@ export default function Todos() {
         const token = localStorage.getItem("token");
         const userId = localStorage.getItem("userId");
         if (!token || !userId) {
-            router.push("/login");
+            router.push(ROUTES.LOGIN);
             return;
         }
 
@@ -392,17 +387,14 @@ export default function Todos() {
             const tags = result.data.map((val: any) => val.tag);
             setSuggestions(tags);
         } catch (error) {
-            setError("Failed to load tags");
             console.error("Fetch tags error:", error);
         }
     };
 
     const onSuggestionsFetchRequested = ({ value }: { value: string }) => {
-        setSuggestionsList(suggestions.filter(suggestion => suggestion.toLowerCase().includes(value.toLowerCase())));
     };
 
     const onSuggestionsClearRequested = () => {
-        setSuggestionsList([]);
     };
 
     const getSuggestionValue = (suggestion: string) => suggestion;

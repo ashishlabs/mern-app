@@ -24,6 +24,7 @@
     "mongoose": "^8.9.2",
     "music-metadata": "^10.6.4",
     "node-cron": "^3.0.3",
+    "node-id3": "^0.2.6",
     "web-push": "^3.6.7",
     "winston": "^3.17.0"
   },

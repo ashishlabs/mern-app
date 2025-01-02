@@ -1,15 +1,15 @@
 "use client";
 
 import { ReactNode } from "react";
-import Sidebar from "../sidebar/sidebar";
 import AuthWrapper from "../auth/AuthWrapper";
+import Navigation from "../navigation/Navigation";
 
 export default function HomeLayout({ children }: { children: ReactNode }) {
   return (
     <AuthWrapper>
-      <div className="min-h-screen flex">
-        <Sidebar />
-        <main className={`transition-all duration-300 flex-1 p-4`}>
+      <div className="min-h-screen flex flex-col">
+        <Navigation />
+        <main className="flex-1">
           {children}
         </main>
       </div>

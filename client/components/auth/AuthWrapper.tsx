@@ -31,7 +31,7 @@ const AuthWrapper = ({ children }: { children: React.ReactNode }) => {
         setSnackbarOpen(true); // Show the snackbar
         setTimeout(() => {
           router.push(ROUTES.LOGIN); 
-        }, 2000); 
+        }, 1000); 
         return response;
       }
 

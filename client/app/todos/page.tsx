@@ -180,7 +180,7 @@ export default function Todos() {
         <HomeLayout>
             <div className="flex flex-col p-8 min-h-screen bg-gray-100">
                 <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
-                    <h1 className="text-3xl font-bold text-gray-800 mb-4 sm:mb-0">Todo List</h1>
+                    <h1 className="text-3xl font-bold text-gray-800 mb-4 sm:mb-0">Task List</h1>
                 </div>
 
                 {/* Filter, Sort, and Search */}
@@ -226,7 +226,7 @@ export default function Todos() {
                                 type="text"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                placeholder="Search todos..."
+                                placeholder="Search tasks..."
                                 className="flex-grow p-2 border border-gray-300 rounded-l focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
                             <button
@@ -249,7 +249,7 @@ export default function Todos() {
                             }}
                             className="py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         >
-                            Create Todo
+                            Create Task
                         </button>
                     </div>
                 ) : (
@@ -257,7 +257,7 @@ export default function Todos() {
                         <div className="w-full">
                             {/* Pagination */}
                             <div className="flex justify-between items-center mb-4">
-                                <p className="text-gray-700">Showing {todos.length} of {totalCount} todos</p>
+                                <p className="text-gray-700">Showing {todos.length} of {totalCount} tasks</p>
                                 <div className="flex space-x-2">
                                     <button
                                         onClick={() => setCurrentPage(currentPage - 1)}

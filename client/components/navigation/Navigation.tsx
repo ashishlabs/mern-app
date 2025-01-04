@@ -21,20 +21,24 @@ const Navigation = () => {
   };
 
   return (
-    <header className="bg-gray-800 text-white p-4">
+    <header className="bg-gray-800 text-white p-4 sticky top-0 z-10">
       <div className="container mx-auto flex justify-between items-center">
         <div className="flex items-center space-x-4">
-          <Link href={ROUTES.DASHBOARD} className="text-xl font-bold hover:text-gray-300">
-            MyApp
+          <Link href={ROUTES.DASHBOARD} className="flex items-center">
+            <img
+              src="/logo.svg"
+              alt="Ashish Labs Logo"
+              className="h-8 w-auto"
+            />
           </Link>
           <div className="hidden md:flex space-x-4">
             <Link href={ROUTES.DASHBOARD} className="hover:text-gray-300">
               Dashboard
             </Link>
             <Link href={ROUTES.TODOS} className="hover:text-gray-300">
-              Todo
+              Tasks
             </Link>
-            <Link href={ROUTES.SONGS} className="hover:text-gray-300">
+            <Link href={ROUTES.PLAYLIST} className="hover:text-gray-300">
               Music
             </Link>
           </div>

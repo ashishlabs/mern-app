@@ -1,13 +1,13 @@
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faList, faMusic } from "@fortawesome/free-solid-svg-icons";
+import { faList, faMap, faMusic } from "@fortawesome/free-solid-svg-icons";
 import HomeLayout from "@/components/home/Home";
 
 const Dashboard = () => {
     const apps = [
         {
-            name: "Todo List",
-            description: "Manage your tasks and to-dos",
+            name: "Quick Task",
+            description: "Manage your tasks",
             icon: faList,
             link: "/todos",
         },
@@ -17,6 +17,12 @@ const Dashboard = () => {
             icon: faMusic,
             link: "/songs",
         },
+        {
+            name: "Maps",
+            description: "Show location on map",
+            icon: faMap,
+            link: "/maps",
+        }
     ];
 
     return (

@@ -2,6 +2,7 @@
 
 import ConfirmationModal from '@/components/ConfirmationModal';
 import HomeLayout from '@/components/home/Home';
+import DatePicker from '@/components/todo/DatePicker';
 import { Todo } from '@/model/todo/todo';
 import { apiFetch } from '@/utils/api';
 import { ROUTES } from '@/utils/routes';
@@ -205,7 +206,7 @@ const TodoDetails = () => {
   return (
     <HomeLayout>
       <div className="flex flex-col p-4 sm:p-8 lg:px-48  min-h-screen bg-gray-100">
-        <h2 className="text-lg sm:text-xl font-bold mb-4">{todoToEdit ? "Edit Todo" : "Create Todo"}</h2>
+        <h2 className="text-lg sm:text-xl font-bold mb-4">{todoToEdit ? "Edit Task" : "Create Task"}</h2>
         <form onSubmit={handleCreateOrUpdateTodo} onKeyDown={handleKeyDown} className="space-y-4">
           <div className="flex flex-col">
             <label htmlFor="title" className="text-sm font-medium text-gray-700">
@@ -286,17 +287,7 @@ const TodoDetails = () => {
             </div>
           </div>
           <div className="flex flex-col">
-            <label htmlFor="dueDate" className="text-sm font-medium text-gray-700">
-              Due Date
-            </label>
-            <input
-              type="date"
-              id="dueDate"
-              value={dueDate}
-              onChange={(e) => setDueDate(e.target.value)}
-              required
-              className="mt-1 p-2 border border-gray-300 rounded w-full"
-            />
+            <DatePicker dueDate={dueDate} setDueDate={setDueDate} />
           </div>
           <div className="flex flex-col">
             <label htmlFor="tags" className="text-sm font-medium text-gray-700">
@@ -337,7 +328,7 @@ const TodoDetails = () => {
             onClick={() => handleCreateOrUpdateTodo}
             className="w-full py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-700"
           >
-            {todoToEdit ? "Update Todo" : "Create Todo"}
+            {todoToEdit ? "Update Task" : "Create Task"}
           </button>
         </form>
         {todoToEdit && (

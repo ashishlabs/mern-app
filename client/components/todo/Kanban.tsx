@@ -1,17 +1,9 @@
 "use client";
+import { Todo } from "@/model/todo/todo";
 import React from "react";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 
-interface Todo {
-    _id: string;
-    title: string;
-    description: string;
-    status: string;
-    priority: string;
-    createdDate: string;
-    dueDate: string;
-}
 
 interface KanbanProps {
     todos: Todo[];
@@ -33,7 +25,7 @@ const statusTextColors: Record<string, string> = {
     completed: "text-green-600",
 };
 
-const Kanban: React.FC<KanbanProps> = ({ todos, handleStatusChange,handleOnEdit}) => {
+const Kanban: React.FC<KanbanProps> = ({ todos, handleStatusChange, handleOnEdit }) => {
     const statuses = ["pending", "in-progress", "completed"];
 
     const moveTodo = (id: string, newStatus: string) => {
@@ -133,7 +125,7 @@ const KanbanItem: React.FC<KanbanItemProps> = ({ todo, onEdit }) => {
                     : todo.priority === "medium"
                         ? "yellow-500"
                         : "green-500"}`}
-                       
+
         >
             <h3 className="text-lg font-bold mb-1">{todo.title}</h3>
             <p className="text-sm text-gray-700 mb-2">{todo.description}</p>
@@ -145,6 +137,13 @@ const KanbanItem: React.FC<KanbanItemProps> = ({ todo, onEdit }) => {
             </p>
             <p className="text-xs text-gray-500 font-semibold">
                 Due: {new Date(todo.dueDate).toLocaleDateString()}
+            </p>
+            <p className="flex flex-wrap gap-2 mt-2">
+                {todo?.tags?.map((tag, index) => (
+                    <span key={index} className="bg-gray-200 px-2 py-1 rounded-md flex items-center">
+                        {tag}
+                    </span>
+                ))}
             </p>
         </div>
     );

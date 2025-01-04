@@ -12,6 +12,7 @@ router.get('/search', songController.searchSongs);
 
 router.get("/stream/:filename", songController.streamMusic);
 
+router.post("/save", songController.savePlayHistory);
 
 
 export default router;

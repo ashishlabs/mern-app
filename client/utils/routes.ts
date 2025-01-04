@@ -6,4 +6,5 @@ export const ROUTES = {
     TODOS: "/todos",
     PLAYLIST: "/playlist",
     SONGS: "/songs",
+    CREATE_TODO: "create-todo",
   };

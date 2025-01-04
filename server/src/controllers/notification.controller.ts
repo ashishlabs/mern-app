@@ -1,11 +1,13 @@
 import { Request, Response } from "express";
 import User from "../models/user.model"; // Assuming you have a User model
 import Notification from "../models/notification.model";
+import { getUserIdFromToken } from "../utils/auth";
 
 export const subscribe = async (req: Request, res: Response): Promise<void> => {
-  const { subscription, userId } = req.body;
+  const { subscription } = req.body;
 
   try {
+    const userId = getUserIdFromToken(req.headers.authorization);
     await User.findByIdAndUpdate(userId, { subscription });
     res.status(201).json({ message: "Subscription added successfully" });
   } catch (error) {
@@ -14,9 +16,9 @@ export const subscribe = async (req: Request, res: Response): Promise<void> => {
 };
 
 export const getNotifications = async (req: Request, res: Response): Promise<void> => {
-  const userId = req.headers['userid']; // Assuming user ID is stored in the headers
+  const userId = getUserIdFromToken(req.headers.authorization);
   try {
-    const notifications = await Notification.find({userId});
+    const notifications = await Notification.find({ userId });
     if (!notifications) {
       res.status(404).json({ error: "notifications not found" });
       return;

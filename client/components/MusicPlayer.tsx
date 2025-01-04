@@ -3,6 +3,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlay, faPause, faForward, faBackward } from "@fortawesome/free-solid-svg-icons";
 import { Song } from "@/model/songs/song";
+import { apiFetch } from "@/utils/api";
 
 interface MusicPlayerProps {
   songs: Song[];
@@ -13,7 +14,6 @@ interface MusicPlayerProps {
 }
 
 const MusicPlayer: React.FC<MusicPlayerProps> = ({ songs, currentSongId, setCurrentSongId, isPlaying, setIsPlaying }) => {
-  const [currentTime, setCurrentTime] = useState<number>(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const currentSong = songs.find(song => song.id === currentSongId);
@@ -21,9 +21,19 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({ songs, currentSongId, setCurr
   useEffect(() => {
     if (audioRef.current) {
       if (isPlaying) {
-        console.log(currentSong)
-        audioRef.current.src = `${process.env.NEXT_PUBLIC_API_BASE_URL}/songs/stream/${currentSong?.fileName}`;
-        audioRef.current.play();
+        const audioUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/songs/stream/${currentSong?.fileName}`;
+        apiFetch(audioUrl, {
+          method: 'GET',
+          responseType: 'blob', 
+        })
+          .then((blob) => {
+            const audioBlobUrl = URL.createObjectURL(blob);
+            audioRef.current.src = audioBlobUrl;
+            audioRef.current.play();
+          })
+          .catch((error) => {
+            console.error('Error streaming audio:', error);
+          });
       } else {
         audioRef.current.pause();
       }
@@ -72,7 +82,7 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({ songs, currentSongId, setCurr
         >
           <FontAwesomeIcon icon={isPlaying ? faPause : faPlay} />
         </button>
-        <FontAwesomeIcon icon={faForward} className="text-xl cursor-pointer"  onClick={handleForward} />
+        <FontAwesomeIcon icon={faForward} className="text-xl cursor-pointer" onClick={handleForward} />
       </div>
       <audio ref={audioRef} style={{ display: "none" }}>
         Your browser does not support the audio element.

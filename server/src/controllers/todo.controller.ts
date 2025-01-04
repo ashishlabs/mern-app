@@ -1,15 +1,17 @@
 import { Request, Response } from "express";
 import Todo, { ITodo } from "../models/todo.model";
-import Tag from  "../models/tag.model";
+import Tag from "../models/tag.model";
 import { sendResponse } from "../utils/response";
 import logger from "../utils/logger";
 import { messages } from "../config/message";
 import { statusCodes } from "../config/status.code";
+import { getUserIdFromToken } from "../utils/auth";
 
 export const createTodo = async (req: Request, res: Response, next: Function): Promise<void> => {
-  const { title, description, userId, status, priority, tags, dueDate } = req.body;
+  const { title, description, status, priority, tags, dueDate } = req.body;
 
   try {
+    const userId = getUserIdFromToken(req.headers.authorization);
     const newTodo = new Todo({
       title,
       description,
@@ -32,7 +34,7 @@ export const createTodo = async (req: Request, res: Response, next: Function): P
 };
 
 export const readTodos = async (req: Request, res: Response): Promise<void> => {
-  const userId = req.headers['userid']; // Assuming user ID is stored in the headers
+  const userId = getUserIdFromToken(req.headers.authorization);
   const { status, sortBy, page = 1, limit = 10 } = req.query;
 
   if (!userId) {
@@ -72,7 +74,7 @@ export const readTodos = async (req: Request, res: Response): Promise<void> => {
 
     sendResponse(res, statusCodes.OK, messages.TODOS_FETCHED, { todos, totalCount });
   } catch (error) {
-    logger.error("Error fetching todos: %o", error);
+    logger.error("Error readTodos: %o", error);
     sendResponse(res, statusCodes.INTERNAL_SERVER_ERROR, messages.ERROR_OCCURRED);
   }
 };
@@ -82,7 +84,6 @@ export const updateTodo = async (req: Request, res: Response): Promise<void> => 
   const {
     title,
     description,
-    userId,
     status,
     priority,
     tags,
@@ -90,6 +91,7 @@ export const updateTodo = async (req: Request, res: Response): Promise<void> => 
   } = req.body;
 
   try {
+    const userId = getUserIdFromToken(req.headers.authorization);
     const updatedTodo = await Todo.findByIdAndUpdate(
       id,
       {
@@ -163,13 +165,12 @@ export const updateTodoStatus = async (req: Request, res: Response): Promise<voi
 };
 
 export const getTodoById = async (req: Request, res: Response): Promise<void> => {
-  const { id, userId } = req.params;
-
+  const { id } = req.params;
+  const userId = getUserIdFromToken(req.headers.authorization);
   if (!userId) {
     sendResponse(res, statusCodes.BAD_REQUEST, "User ID is required");
     return;
   }
-
   try {
     const todo = await Todo.findOne({ _id: id, userId });
 
@@ -180,7 +181,7 @@ export const getTodoById = async (req: Request, res: Response): Promise<void> =>
 
     sendResponse(res, statusCodes.OK, messages.TODO_FETCHED, todo);
   } catch (error) {
-    logger.error("Error fetching todo: %o", error);
+    logger.error("Error getTodoById todo: %o", error);
     sendResponse(res, statusCodes.INTERNAL_SERVER_ERROR, messages.ERROR_OCCURRED);
   }
 };
@@ -188,7 +189,7 @@ export const getTodoById = async (req: Request, res: Response): Promise<void> =>
 
 export const searchTodos = async (req: Request, res: Response): Promise<void> => {
   const { query } = req.query;
-  const userId = req.headers['userid']; 
+  const userId = getUserIdFromToken(req.headers.authorization);
 
   if (!userId) {
     sendResponse(res, statusCodes.BAD_REQUEST, messages.USER_ID_REQUIRED);
@@ -212,7 +213,7 @@ export const searchTodos = async (req: Request, res: Response): Promise<void> =>
     const todos = await Todo.find(searchQuery);
 
     if (!todos.length) {
-      sendResponse(res, statusCodes.NOT_FOUND, messages.TODO_NOT_FOUND,[]);
+      sendResponse(res, statusCodes.NOT_FOUND, messages.TODO_NOT_FOUND, []);
       return;
     }
 
@@ -223,58 +224,3 @@ export const searchTodos = async (req: Request, res: Response): Promise<void> =>
   }
 };
 
-export const addTag = async (req: Request, res: Response): Promise<void> => {
-  const { tag } = req.body;
-  const userId = req.headers['userid']; 
-
-  if (!userId) {
-    sendResponse(res, statusCodes.BAD_REQUEST, messages.USER_ID_REQUIRED);
-    return;
-  }
-
-  if (!tag) {
-    sendResponse(res, statusCodes.BAD_REQUEST, messages.TAG_REQUIRED);
-    return;
-  }
-
-  try {
-    // Check if the tag already exists for the user
-    const existingTag = await Tag.findOne({ tag, userId });
-    if (existingTag) {
-      sendResponse(res, statusCodes.CONFLICT, messages.TAG_ALREADY_EXISTS);
-      return;
-    }
-
-    const newTag = new Tag({ tag, userId });
-    await newTag.save();
-    const tags = await Tag.find({ userId });
-
-    sendResponse(res, statusCodes.CREATED, messages.TAG_ADDED, tags);
-  } catch (error) {
-    logger.error("Error adding tag: %o", error);
-    sendResponse(res, statusCodes.INTERNAL_SERVER_ERROR, messages.ERROR_OCCURRED);
-  }
-};
-
-export const getTags = async (req: Request, res: Response): Promise<void> => {
-  const userId = req.headers['userid']; 
-
-  if (!userId) {
-    sendResponse(res, statusCodes.BAD_REQUEST, messages.USER_ID_REQUIRED);
-    return;
-  }
-
-  try {
-    const tags = await Tag.find({ userId });
-
-    if (!tags.length) {
-      sendResponse(res, statusCodes.NOT_FOUND, messages.TAGS_NOT_FOUND, []);
-      return;
-    }
-
-    sendResponse(res, statusCodes.OK, messages.TAGS_FETCHED, tags);
-  } catch (error) {
-    logger.error("Error fetching tags: %o", error);
-    sendResponse(res, statusCodes.INTERNAL_SERVER_ERROR, messages.ERROR_OCCURRED);
-  }
-};

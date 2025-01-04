@@ -1,16 +1,21 @@
 import { Request, Response } from 'express';
 import Playlist from '../../models/songs/playlist.model';
+import { getUserIdFromToken } from '../../utils/auth';
+import { sendResponse } from '../../utils/response';
+import { statusCodes } from '../../config/status.code';
+import { send } from 'process';
 
 // Create a new playlist
 export const createPlaylist = async (req: Request, res: Response) => {
-  const { name, userId, songs } = req.body;
+  const { name, songs } = req.body;
 
   try {
+    const userId = getUserIdFromToken(req.headers.authorization);
     const newPlaylist = new Playlist({ name, userId, songs });
     await newPlaylist.save();
-    res.status(201).json(newPlaylist);
+    sendResponse(res, statusCodes.CREATED, 'Playlist created successfully', newPlaylist);
   } catch (err) {
-    res.status(400).json({ message: 'Error creating playlist', error: err });
+    sendResponse(res, statusCodes.INTERNAL_SERVER_ERROR, 'Error creating playlist');
   }
 };
 
@@ -18,25 +23,25 @@ export const createPlaylist = async (req: Request, res: Response) => {
 export const getAllPlaylists = async (req: Request, res: Response) => {
   try {
     const playlists = await Playlist.find().populate('songs');
-    res.status(200).json(playlists);
+    sendResponse(res, statusCodes.OK, 'Playlists fetched successfully', playlists);
   } catch (err) {
-    res.status(400).json({ message: 'Error fetching playlists', error: err });
+    sendResponse(res, statusCodes.NOT_FOUND, 'Error fetching playlists');
   }
 };
 
 // Get a specific playlist by ID
 export const getPlaylistById = async (req: Request, res: Response) => {
   const { id } = req.params;
-  
+
   try {
     const playlist = await Playlist.findById(id).populate('songs');
     if (playlist) {
-      res.status(200).json(playlist);
+      sendResponse(res, statusCodes.OK, 'Playlist fetched successfully', playlist);
     } else {
-      res.status(404).json({ message: 'Playlist not found' });
+      sendResponse(res, statusCodes.NOT_FOUND, 'Playlist not found');
     }
   } catch (err) {
-    res.status(400).json({ message: 'Error fetching playlist', error: err });
+    sendResponse(res, statusCodes.INTERNAL_SERVER_ERROR, 'Error fetching playlist');
   }
 };
 
@@ -48,16 +53,24 @@ export const addSongToPlaylist = async (req: Request, res: Response) => {
   try {
     const playlist = await Playlist.findById(id);
     if (playlist) {
+      // Check if the song already exists in the playlist
+      if (playlist.songs.includes(songId)) {
+        sendResponse(res, statusCodes.CONFLICT, 'Song already exists in the playlist');
+        return;
+      }
+
+      // If the song is not a duplicate, add it to the playlist
       playlist.songs.push(songId);
       await playlist.save();
-      res.status(200).json(playlist);
+      sendResponse(res, statusCodes.OK, 'Song added to playlist successfully', playlist);
     } else {
-      res.status(404).json({ message: 'Playlist not found' });
+      sendResponse(res, statusCodes.NOT_FOUND, 'Playlist not found');
     }
   } catch (err) {
-    res.status(400).json({ message: 'Error adding song to playlist', error: err });
+    sendResponse(res, statusCodes.INTERNAL_SERVER_ERROR, 'Error adding song to playlist');
   }
 };
+
 
 // Remove song from playlist
 export const removeSongFromPlaylist = async (req: Request, res: Response) => {
@@ -67,13 +80,24 @@ export const removeSongFromPlaylist = async (req: Request, res: Response) => {
   try {
     const playlist = await Playlist.findById(id);
     if (playlist) {
-      playlist.songs = playlist.songs.filter(song => song.toString() !== songId);
+      // Check if the song exists in the playlist
+      const songIndex = playlist.songs.findIndex(song => song.toString() === songId);
+
+      if (songIndex === -1) {
+        // Song not found in the playlist, do nothing and return a message
+        sendResponse(res, statusCodes.BAD_REQUEST, 'Song not found in the playlist');
+        return;
+      }
+
+      // Remove the song from the playlist if it exists
+      playlist.songs.splice(songIndex, 1);
       await playlist.save();
-      res.status(200).json(playlist);
+      sendResponse(res, statusCodes.OK, 'Song removed from playlist successfully', playlist);
     } else {
-      res.status(404).json({ message: 'Playlist not found' });
+      sendResponse(res, statusCodes.NOT_FOUND, 'Playlist not found');
     }
   } catch (err) {
-    res.status(400).json({ message: 'Error removing song from playlist', error: err });
+    sendResponse(res, statusCodes.INTERNAL_SERVER_ERROR, 'Error removing song from playlist');
   }
 };
+

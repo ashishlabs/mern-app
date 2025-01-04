@@ -10,6 +10,9 @@ import "./utils/scheduler";
 import { triggerNotificationsNow } from "./utils/scheduler";
 import notificationRoutes from "./routes/notification/notification.routes";
 import songRoutes from "./routes/songs/song.routes";
+import playlistRoutes from "./routes/songs/playlist.routes";
+import tagsRoutes from "./routes/tags/tags.routes";
+import authMiddleware from "./middleware/auth.middleware"; // Import the auth middleware
 
 // Initialize dotenv
 dotenv.config();
@@ -21,8 +24,8 @@ app.use(express.json({ limit: '10kb' })); // Limit the size of the request body
 // Configure CORS to allow all origins
 app.use(cors({
   origin: '*',
-  methods: ['GET', 'POST', 'PUT', 'DELETE','PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization','Userid']
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Userid']
 }));
 
 app.use(helmet()); // Use Helmet to set various HTTP headers for security
@@ -54,11 +57,17 @@ app.post("/api/trigger-notifications", async (req, res) => {
     res.status(500).json({ error: "Failed to trigger notifications" });
   }
 });
+
+// Apply the authentication middleware globally
+app.use(authMiddleware); // Global middleware for all routes
+
 // Use versioned routes
-app.use(`/api/${apiVersion}/auth`, authRoutes);
+app.use(`/api/${apiVersion}/auth`, authRoutes); // Auth routes don't need the middleware
 app.use(`/api/${apiVersion}/todos`, todoRoutes);
 app.use(`/api/${apiVersion}/notification`, notificationRoutes);
 app.use(`/api/${apiVersion}/songs`, songRoutes);
+app.use(`/api/${apiVersion}/playlists`, playlistRoutes);
+app.use(`/api/${apiVersion}/tags`, tagsRoutes);
 
 
 // Start server

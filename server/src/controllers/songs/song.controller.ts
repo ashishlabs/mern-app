@@ -4,6 +4,10 @@ import fs from 'fs';
 import path from 'path';
 import { sendResponse } from '../../utils/response';
 import { statusCodes } from '../../config/status.code';
+import PlayHistory from '../../models/songs/playHistory.model';
+import { getUserIdFromToken } from '../../utils/auth';
+import logger from '../../utils/logger';
+import { send } from 'process';
 const musicDir = path.join(__dirname, "../../music");
 
 
@@ -24,9 +28,9 @@ export const getAllSongs = async (req: Request, res: Response) => {
       url: song.url,
       fileName: song.filename,
     }));
-    sendResponse(res,statusCodes.OK,'Songs fetched successfully',transformedSongs)
+    sendResponse(res, statusCodes.OK, 'Songs fetched successfully', transformedSongs)
   } catch (err) {
-    sendResponse(res,statusCodes.NOT_FOUND,'Error fetching songs',[])
+    sendResponse(res, statusCodes.NOT_FOUND, 'Error fetching songs', [])
   }
 };
 
@@ -55,9 +59,9 @@ export const searchSongs = async (req: Request, res: Response) => {
       url: song.url,
       fileName: song.filename,
     }));
-    sendResponse(res,statusCodes.OK,'Songs fetched successfully',transformedSongs)
+    sendResponse(res, statusCodes.OK, 'Songs fetched successfully', transformedSongs)
   } catch (err) {
-    sendResponse(res,statusCodes.NOT_FOUND,'Error fetching songs',[])
+    sendResponse(res, statusCodes.NOT_FOUND, 'Error fetching songs', [])
   }
 };
 
@@ -68,7 +72,7 @@ const streamFile = (filePath: string, range: string | undefined, res: Response) 
   if (range) {
     const [start, end] = range.replace(/bytes=/, "").split("-").map(Number);
     if (start >= fileSize) {
-      res.status(416).send(`Requested range not satisfiable: ${start} >= ${fileSize}`);
+      sendResponse(res, statusCodes.REQUESTED_RANGE_NOT_SATISFIABLE, `Requested range not satisfiable: ${start} >= ${fileSize}`, {});
       return;
     }
     const chunksize = (end || fileSize - 1) - start + 1;
@@ -97,10 +101,28 @@ const streamFile = (filePath: string, range: string | undefined, res: Response) 
 export const streamMusic = (req: Request, res: Response): void => {
   const filePath = path.join(musicDir, req.params.filename);
   if (!fs.existsSync(filePath)) {
-    res.status(404).send("File not found");
+    sendResponse(res, statusCodes.NOT_FOUND, 'File not found', {});
     return;
   }
-
   streamFile(filePath, req.headers.range, res);
 };
 
+export const savePlayHistory = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const userId = getUserIdFromToken(req.headers.authorization);
+    if (!userId) {
+      sendResponse(res, statusCodes.UNAUTHORIZED, 'Unauthorized: No valid token provided', {});
+      return;
+    }
+    const { songId } = req.body;
+    const playHistory = new PlayHistory({
+      userId,
+      songId,
+    });
+    await playHistory.save();
+    sendResponse(res, statusCodes.OK, 'Songs fetched successfully', {playHistory});
+  } catch (error) {
+    logger.error('Error saving play history:', error);
+    sendResponse(res, statusCodes.INTERNAL_SERVER_ERROR, 'Error saving play history:', {});
+  }
+};

@@ -10,7 +10,7 @@ import { statusCodes } from "../config/status.code";
 const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret";
 
 export const signup = async (req: Request, res: Response): Promise<void> => {
-  const {  email, password } = req.body;
+  const { email, password } = req.body;
 
   try {
     const existingUser = await User.findOne({ email });
@@ -55,7 +55,12 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
     const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: "1h" });
 
-    sendResponse(res, statusCodes.OK, messages.LOGIN_SUCCESSFUL, { token, user });
+    sendResponse(res, statusCodes.OK, messages.LOGIN_SUCCESSFUL, {
+      token, user: {
+        email: user.email,
+        id: user._id
+      }
+    });
   } catch (error) {
     logger.error("Error during login: %o", error);
     sendResponse(res, statusCodes.INTERNAL_SERVER_ERROR, messages.ERROR_OCCURRED);

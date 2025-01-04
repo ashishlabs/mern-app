@@ -1,10 +1,11 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEllipsisV, faBarsStaggered } from "@fortawesome/free-solid-svg-icons";
+import { faBarsStaggered } from "@fortawesome/free-solid-svg-icons";
 import HomeLayout from "@/components/home/Home";
 import MusicPlayer from "@/components/MusicPlayer";
 import { Song } from "@/model/songs/song";
+import { apiFetch } from "@/utils/api";
 
 const SongList: React.FC = () => {
     const [isPlaying, setIsPlaying] = useState<string | null>(null);
@@ -13,13 +14,14 @@ const SongList: React.FC = () => {
     const [searchQuery, setSearchQuery] = useState<string>("");
     const [debouncedSearchQuery, setDebouncedSearchQuery] = useState<string>("");
 
-    const handlePlayPause = (id: string) => {
+    const handlePlayPause = async (id: string) => {
         if (isPlaying === id) {
             setIsPlaying(null);
             setCurrentSongId(null);
         } else {
             setCurrentSongId(id);
             setIsPlaying(id);
+            await saveSongPlayStatus(id); // API call to save play status
         }
     };
 
@@ -31,7 +33,7 @@ const SongList: React.FC = () => {
     useEffect(() => {
         const timer = setTimeout(() => {
             setDebouncedSearchQuery(searchQuery);
-        }, 1000); // Delay the API call by 500ms
+        }, 1000); // Delay the API call by 1000ms
 
         return () => {
             clearTimeout(timer); // Clear the previous timeout if the search query changes
@@ -42,14 +44,10 @@ const SongList: React.FC = () => {
     useEffect(() => {
         const fetchSongs = async (query: string) => {
             try {
-                const response = await fetch(
+                const response = await apiFetch(
                     `${process.env.NEXT_PUBLIC_API_BASE_URL}/songs/search?query=${query}`
                 );
-                if (!response.ok) {
-                    throw new Error("Failed to fetch songs");
-                }
-                const jsondata = await response.json();
-                setSongs(jsondata?.data);
+                setSongs(response?.data);
             } catch (error) {
                 console.error("Error fetching songs:", error);
             }
@@ -61,12 +59,8 @@ const SongList: React.FC = () => {
             // If search query is empty, fetch all songs
             const fetchAllSongs = async () => {
                 try {
-                    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/songs`);
-                    if (!response.ok) {
-                        throw new Error("Failed to fetch songs");
-                    }
-                    const jsondata = await response.json();
-                    setSongs(jsondata?.data);
+                    const response = await apiFetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/songs`);
+                    setSongs(response?.data);
                 } catch (error) {
                     console.error("Error fetching songs:", error);
                 }
@@ -75,6 +69,22 @@ const SongList: React.FC = () => {
             fetchAllSongs();
         }
     }, [debouncedSearchQuery]);
+
+    // API call to save the song play status
+    const saveSongPlayStatus = async (songId: string) => {
+        try {
+            const response = await apiFetch(
+                `${process.env.NEXT_PUBLIC_API_BASE_URL}/songs/save`,
+                {
+                    method: "POST",
+                    body: { songId },
+                }
+            );
+            console.log("Song play status saved:", response);
+        } catch (error) {
+            console.error("Error saving play status:", error);
+        }
+    };
 
     return (
         <HomeLayout>

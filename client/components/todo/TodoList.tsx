@@ -17,26 +17,22 @@ interface Todo {
 interface TodoListProps {
     todos: Todo[];
     handleStatusChange: (id: string, status: string) => void;
-    setTodoToDelete: (id: string) => void;
-    setIsConfirmationModalOpen: (isOpen: boolean) => void;
-    openEditModal: (id: string) => void;
     getStatusIndicator: (status: string) => JSX.Element;
     getPriorityIcon: (priority: string) => JSX.Element;
+    handleOnEdit: (id: string) => void;
 }
 
 const TodoList: React.FC<TodoListProps> = ({
     todos,
     handleStatusChange,
-    setTodoToDelete,
-    setIsConfirmationModalOpen,
-    openEditModal,
     getStatusIndicator,
     getPriorityIcon,
+    handleOnEdit
 }) => {
     return (
         <ul className="space-y-4">
             {todos.map((todo) => (
-                <li key={todo._id} className="p-4 bg-white shadow-md rounded relative group">
+                <li onClick={() => handleOnEdit(todo._id)} key={todo._id} className="p-4 bg-white shadow-md rounded relative group cursor-pointer">
                     <input
                         type="checkbox"
                         checked={todo.status === "completed"}
@@ -47,19 +43,6 @@ const TodoList: React.FC<TodoListProps> = ({
                             )
                         }
                         className="form-checkbox h-5 w-5 text-blue-600 absolute top-[20px] left-[16px]"
-                    />
-                    <FontAwesomeIcon
-                        icon={faTrash}
-                        onClick={() => {
-                            setTodoToDelete(todo._id);
-                            setIsConfirmationModalOpen(true);
-                        }}
-                        className="absolute top-[20px] right-[16px] text-red-500 hover:text-red-700 hidden group-hover:block cursor-pointer"
-                    />
-                    <FontAwesomeIcon
-                        icon={faEdit}
-                        onClick={() => openEditModal(todo._id)}
-                        className="absolute top-[20px] right-[50px] text-blue-500 hover:text-blue-700 hidden group-hover:block cursor-pointer"
                     />
                     <div className="ml-8">
                         <h2 className="text-xl font-bold flex items-center">

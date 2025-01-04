@@ -1,6 +1,4 @@
 "use client";
-import { faEdit, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -19,7 +17,6 @@ interface KanbanProps {
     todos: Todo[];
     handleStatusChange: (id: string, status: string) => void;
     handleOnEdit: (id: string) => void;
-    handleOnDelete: (id: string) => void;
 }
 
 const ItemType = "TODO";
@@ -36,15 +33,11 @@ const statusTextColors: Record<string, string> = {
     completed: "text-green-600",
 };
 
-const Kanban: React.FC<KanbanProps> = ({ todos, handleStatusChange,handleOnDelete ,handleOnEdit}) => {
+const Kanban: React.FC<KanbanProps> = ({ todos, handleStatusChange,handleOnEdit}) => {
     const statuses = ["pending", "in-progress", "completed"];
 
     const moveTodo = (id: string, newStatus: string) => {
         handleStatusChange(id, newStatus);
-    };
-    const onDelete = (id: string) => {
-        console.log("delete", id);
-        handleOnDelete(id);
     };
     const onEdit = (id: string) => {
         handleOnEdit(id);
@@ -60,7 +53,6 @@ const Kanban: React.FC<KanbanProps> = ({ todos, handleStatusChange,handleOnDelet
                             status={status}
                             todos={todos}
                             moveTodo={moveTodo}
-                            onDelete={onDelete}
                             onEdit={onEdit}
 
                         />
@@ -76,7 +68,6 @@ interface KanbanColumnProps {
     todos: Todo[];
     moveTodo: (id: string, newStatus: string) => void;
     onEdit: (id: string) => void;
-    onDelete: (id: string) => void;
 }
 
 const KanbanColumn: React.FC<KanbanColumnProps> = ({
@@ -84,7 +75,6 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
     todos,
     moveTodo,
     onEdit,
-    onDelete
 }) => {
     const ref = React.useRef<HTMLDivElement>(null);
     const [, drop] = useDrop({
@@ -108,7 +98,6 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
                     .filter((todo) => todo.status === status)
                     .map((todo) => (
                         <KanbanItem key={todo._id} todo={todo}
-                            onDelete={(id) => onDelete(id)}
                             onEdit={(id) => onEdit(id)} />
                     ))}
             </div>
@@ -119,10 +108,9 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
 interface KanbanItemProps {
     todo: Todo;
     onEdit: (id: string) => void;
-    onDelete: (id: string) => void;
 }
 
-const KanbanItem: React.FC<KanbanItemProps> = ({ todo, onEdit, onDelete }) => {
+const KanbanItem: React.FC<KanbanItemProps> = ({ todo, onEdit }) => {
     const [{ isDragging }, drag] = useDrag({
         type: ItemType,
         item: { id: todo._id },
@@ -136,6 +124,7 @@ const KanbanItem: React.FC<KanbanItemProps> = ({ todo, onEdit, onDelete }) => {
             ref={(node) => {
                 if (node) drag(node);
             }}
+            onClick={() => onEdit(todo._id)}
             className={`p-4 bg-white shadow rounded-lg border-l-4 cursor-pointer  ${isDragging
                 ? "opacity-50"
                 : "opacity-100"
@@ -144,6 +133,7 @@ const KanbanItem: React.FC<KanbanItemProps> = ({ todo, onEdit, onDelete }) => {
                     : todo.priority === "medium"
                         ? "yellow-500"
                         : "green-500"}`}
+                       
         >
             <h3 className="text-lg font-bold mb-1">{todo.title}</h3>
             <p className="text-sm text-gray-700 mb-2">{todo.description}</p>
@@ -156,23 +146,6 @@ const KanbanItem: React.FC<KanbanItemProps> = ({ todo, onEdit, onDelete }) => {
             <p className="text-xs text-gray-500 font-semibold">
                 Due: {new Date(todo.dueDate).toLocaleDateString()}
             </p>
-            <div className="flex gap-2 opacity-0 hover:opacity-100">
-                <button
-                    onClick={() => onEdit(todo._id)}
-                    className="text-blue-500 hover:text-blue-700"
-                    title="Edit"
-                >
-                    <FontAwesomeIcon icon={faEdit} className="w-5 h-5" />
-                </button>
-                <button
-                    onClick={() => onDelete(todo._id)}
-                    className="text-red-500 hover:text-red-700"
-                    title="Delete"
-                >
-                    <FontAwesomeIcon icon={faTrashAlt} className="w-5 h-5" />
-                </button>
-            </div>
-
         </div>
     );
 };

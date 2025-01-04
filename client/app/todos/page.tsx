@@ -6,45 +6,21 @@ import {
     faClock, faExclamationCircle, faExclamationTriangle,
     faSearch, faArrowCircleDown, faPlus
 } from "@fortawesome/free-solid-svg-icons";
-import Modal from "../../components/Modal";
-import ConfirmationModal from "../../components/ConfirmationModal";
 import TodoList from "@/components/todo/TodoList";
-import TodoForm from "@/components/todo/TodoForm";
 import Kanban from "@/components/todo/Kanban";
 import HomeLayout from "@/components/home/Home";
 import { useDeviceType } from "@/utils/mobile";
 import { ROUTES } from "@/utils/routes";
+import { Todo } from "@/model/todo/todo";
 
-interface Todo {
-    _id: string;
-    title: string;
-    description: string;
-    status: string;
-    priority: string;
-    tags: string[];
-    userId: string;
-    createdDate: string;
-    dueDate: string;
-}
+
 
 export default function Todos() {
     const [todos, setTodos] = useState<Todo[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
-    const [todoToDelete, setTodoToDelete] = useState<string | null>(null);
-    const [todoToEdit, setTodoToEdit] = useState<Todo | null>(null);
-    const [title, setTitle] = useState("");
-    const [description, setDescription] = useState("");
-    const [status, setStatus] = useState("pending");
-    const [priority, setPriority] = useState("medium");
-    const [tags, setTags] = useState<string[]>([]);
-    const [tagInput, setTagInput] = useState("");
-    const [suggestions, setSuggestions] = useState<string[]>([]);
     const [filterStatus, setFilterStatus] = useState("");
     const [sortOption, setSortOption] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
-    const [dueDate, setDueDate] = useState("");
     const router = useRouter();
     const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
@@ -52,9 +28,6 @@ export default function Todos() {
     const isMobile = useDeviceType();
     const todosPerPage = 10;
 
-    useEffect(() => {
-        fetchTags();
-    }, []);
 
     useEffect(() => {
         if (searchQuery.trim().length === 0) {
@@ -144,52 +117,6 @@ export default function Todos() {
         setSortOption(e.target.value);
     }
 
-    const handleCreateOrUpdateTodo = async (e: React.FormEvent) => {
-        e.preventDefault();
-        const token = localStorage.getItem("token");
-        const userId = localStorage.getItem("userId");
-        if (!token || !userId) {
-            router.push(ROUTES.LOGIN);
-            return;
-        }
-
-        const url = todoToEdit
-            ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/todos/${todoToEdit._id}`
-            : `${process.env.NEXT_PUBLIC_API_BASE_URL}/todos`;
-        const method = todoToEdit ? "PUT" : "POST";
-
-        try {
-            const response = await fetch(url, {
-                method,
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify({ title, description, userId, status, priority, tags, dueDate }),
-            });
-
-            if (!response.ok) {
-                throw new Error(`Failed to ${todoToEdit ? "update" : "create"} todo`);
-            }
-
-            const result = await response.json();
-            if (todoToEdit) {
-                setTodos(todos.map(todo => (todo._id === todoToEdit._id ? result.data : todo)));
-            } else {
-                setTodos([...todos, result.data]);
-            }
-
-            setIsModalOpen(false);
-            setTitle("");
-            setDescription("");
-            setStatus("pending");
-            setPriority("medium");
-            setTags([]);
-            setTodoToEdit(null);
-        } catch (error) {
-            console.error(`${todoToEdit ? "Update" : "Create"} todo error:`, error);
-        }
-    };
 
     const handleStatusChange = async (todoId: string, newStatus: string) => {
         const token = localStorage.getItem("token");
@@ -219,40 +146,6 @@ export default function Todos() {
         }
     };
 
-    const handleDeleteTodo = async () => {
-        if (!todoToDelete) return;
-
-        const token = localStorage.getItem("token");
-        if (!token) {
-            router.push(ROUTES.LOGIN);
-            return;
-        }
-
-        try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/todos/${todoToDelete}`, {
-                method: "DELETE",
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-
-            if (!response.ok) {
-                throw new Error("Failed to delete todo");
-            }
-
-            setTodos(todos.filter(todo => todo._id !== todoToDelete));
-            setTodoToDelete(null);
-            setIsConfirmationModalOpen(false);
-        } catch (error) {
-            console.error("Delete todo error:", error);
-        }
-    };
-
-    const handleKeyDown = (e: React.KeyboardEvent<Element>) => {
-        if (e.key === "Enter") {
-            e.preventDefault();
-        }
-    };
 
     const getStatusIndicator = (status: string) => {
         switch (status) {
@@ -281,126 +174,8 @@ export default function Todos() {
     };
 
     const openEditModal = async (todoId: string) => {
-        const token = localStorage.getItem("token");
-        const userId = localStorage.getItem("userId");
-        if (!token) {
-            router.push(ROUTES.LOGIN);
-            return;
-        }
-
-        try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/todos/${userId}/${todoId}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-
-            if (!response.ok) {
-                throw new Error("Failed to fetch todo");
-            }
-
-            const result = await response.json();
-            setTodoToEdit(result.data);
-            setTitle(result.data.title);
-            setDescription(result.data.description);
-            setStatus(result.data.status);
-            setPriority(result.data.priority);
-            setTags(result.data.tags);
-            setIsModalOpen(true);
-        } catch (error) {
-            console.error("Fetch todo error:", error);
-        }
+        router.push(`/todos/${todoId}`);
     };
-
-    const handleTagInputChange = (event: React.FormEvent<HTMLElement>, { newValue }: { newValue: string }) => {
-        setTagInput(newValue);
-    };
-
-    const handleTagAddition = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === "Enter" && tagInput.trim() !== "") {
-            if (!tags.some(tag => tag.toLowerCase() === tagInput.trim().toLowerCase())) {
-                setTags([...tags, tagInput.trim()]);
-                setTagInput("");
-                if (!suggestions.some(tag => tag.toLowerCase() === tagInput.trim().toLowerCase())) {
-                    addTags();
-                }
-            }
-        }
-    };
-
-
-    const handleTagRemove = (tagToRemove: string) => {
-        setTags(tags.filter(tag => tag !== tagToRemove));
-    };
-
-    const addTags = async () => {
-        const token = localStorage.getItem("token");
-        const userId = localStorage.getItem("userId");
-        if (!token || !userId) {
-            router.push(ROUTES.LOGIN);
-            return;
-        }
-
-        try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/todos/tags`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                    userid: userId,
-                },
-                body: JSON.stringify({ tag: tagInput.trim() }),
-            });
-
-            if (!response.ok) {
-                throw new Error("Failed to add tag");
-            }
-            const result = await response.json();
-            const tags = result.data.map((val: any) => val.tag);
-            setSuggestions(tags);
-        } catch (error) {
-            console.error("Add tag error:", error);
-        }
-    }
-
-    const fetchTags = async () => {
-        const token = localStorage.getItem("token");
-        const userId = localStorage.getItem("userId");
-        if (!token || !userId) {
-            router.push(ROUTES.LOGIN);
-            return;
-        }
-
-        try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/todos/tags`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    userid: userId,
-                },
-            });
-
-            if (!response.ok) {
-                throw new Error("Failed to fetch tags");
-            }
-
-            const result = await response.json();
-            const tags = result.data.map((val: any) => val.tag);
-            setSuggestions(tags);
-        } catch (error) {
-            console.error("Fetch tags error:", error);
-        }
-    };
-
-    const onSuggestionsFetchRequested = ({ value }: { value: string }) => {
-    };
-
-    const onSuggestionsClearRequested = () => {
-    };
-
-    const getSuggestionValue = (suggestion: string) => suggestion;
-
-    const renderSuggestion = (suggestion: string) => <div>{suggestion}</div>;
-
     return (
         <HomeLayout>
             <div className="flex flex-col p-8 min-h-screen bg-gray-100">
@@ -470,14 +245,7 @@ export default function Todos() {
                         <p className="mb-4 text-gray-700">No todos available.</p>
                         <button
                             onClick={() => {
-                                setTodoToEdit(null);
-                                setTitle("");
-                                setDescription("");
-                                setStatus("pending");
-                                setPriority("medium");
-                                setTags([]);
-                                setIsModalOpen(true);
-                                setTagInput("");
+                                openEditModal(ROUTES.CREATE_TODO);
                             }}
                             className="py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         >
@@ -507,38 +275,25 @@ export default function Todos() {
                                     </button>
                                 </div>
                             </div>
-
-                            {/* Todo View (List or Kanban) */}
                             {isMobile === true ? (
                                 <TodoList
                                     todos={todos}
                                     handleStatusChange={handleStatusChange}
-                                    setTodoToDelete={setTodoToDelete}
-                                    setIsConfirmationModalOpen={setIsConfirmationModalOpen}
-                                    openEditModal={openEditModal}
                                     getStatusIndicator={getStatusIndicator}
                                     getPriorityIcon={getPriorityIcon}
+                                    handleOnEdit={openEditModal}
                                 />
                             ) : (
                                 <Kanban
                                     todos={todos}
                                     handleStatusChange={handleStatusChange}
                                     handleOnEdit={openEditModal}
-                                    handleOnDelete={setTodoToDelete}
                                 />
                             )}
                             <div className="fixed bottom-8 right-8">
-                                <button
-                                    onClick={() => {
-                                        setTodoToEdit(null);
-                                        setTitle("");
-                                        setDescription("");
-                                        setStatus("pending");
-                                        setPriority("medium");
-                                        setTags([]);
-                                        setIsModalOpen(true);
-                                        setTagInput("");
-                                    }}
+                                <button onClick={() => {
+                                    openEditModal(ROUTES.CREATE_TODO);
+                                }}
                                     className="p-4 bg-blue-500 text-white rounded-full shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 >
                                     <FontAwesomeIcon icon={faPlus} className="text-2xl" />
@@ -548,42 +303,6 @@ export default function Todos() {
                     )
                 )}
             </div>
-            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-                <TodoForm
-                    todoToEdit={todoToEdit}
-                    title={title}
-                    description={description}
-                    status={status}
-                    priority={priority}
-                    tags={tags}
-                    tagInput={tagInput}
-                    suggestionsList={suggestions}
-                    setTitle={setTitle}
-                    setDescription={setDescription}
-                    setStatus={setStatus}
-                    setPriority={setPriority}
-                    setTags={setTags}
-                    setTagInput={setTagInput}
-                    handleTagRemove={handleTagRemove}
-                    handleTagInputChange={handleTagInputChange}
-                    handleTagAddition={handleTagAddition}
-                    onSuggestionsFetchRequested={onSuggestionsFetchRequested}
-                    onSuggestionsClearRequested={onSuggestionsClearRequested}
-                    getSuggestionValue={getSuggestionValue}
-                    renderSuggestion={renderSuggestion}
-                    handleCreateOrUpdateTodo={handleCreateOrUpdateTodo}
-                    handleKeyDown={handleKeyDown}
-                    dueDate={dueDate}
-                    setDueDate={setDueDate}
-                />
-            </Modal>
-
-            <ConfirmationModal
-                isOpen={isConfirmationModalOpen}
-                onClose={() => setIsConfirmationModalOpen(false)}
-                onConfirm={handleDeleteTodo}
-                message="Are you sure you want to delete this todo?"
-            />
         </HomeLayout>
     );
 }

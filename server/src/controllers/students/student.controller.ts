@@ -14,19 +14,19 @@ export const saveStudent = async (req: Request, res: Response): Promise<void> =>
         sendResponse(res, statusCodes.BAD_REQUEST, messages.USER_ID_REQUIRED);
         return;
     }
-    const { name, fees } = req.body;
+    const student = req.body;
     try {
-        const existingStudent = await Student.findOne({ name });
+        const existingStudent = await Student.findOne({ name: student?.name });
         if (existingStudent) {
             sendResponse(res, statusCodes.CONFLICT, messages.STUDENT_ALREADY_EXISTS);
             return;
         }
 
-        const newStudent = new Student({ name, fees });
+        const newStudent = new Student(student);
         await newStudent.save();
         sendResponse(res, statusCodes.CREATED, messages.STUDENT_ADDED, newStudent);
     } catch (error) {
-        logger.error("Error adding tag: %o", error);
+        logger.error("Error adding student: %o", error);
         sendResponse(res, statusCodes.INTERNAL_SERVER_ERROR, messages.ERROR_OCCURRED);
     }
 };

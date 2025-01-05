@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faList, faMap, faMusic } from "@fortawesome/free-solid-svg-icons";
+import { faBook, faList, faMap, faMusic } from "@fortawesome/free-solid-svg-icons";
 import HomeLayout from "@/components/home/Home";
 
 const Dashboard = () => {
@@ -16,6 +16,12 @@ const Dashboard = () => {
             description: "Listen to your favorite songs",
             icon: faMusic,
             link: "/songs",
+        },
+        {
+            name: "Richa Classes",
+            description: "Manage richa classes",
+            icon: faBook,
+            link: "/students",
         }
     ];
 

@@ -12,7 +12,6 @@ import playlistRoutes from "./routes/songs/playlist.routes";
 import tagsRoutes from "./routes/tags/tags.routes";
 import studentsRoutes from "./routes/students/students.routes";
 import feesRoutes from "./routes/students/fees.routes"; 
-import batchRoutes from "./routes/students/batch.routes";
 
 import authMiddleware from "./middleware/auth.middleware";
 
@@ -63,8 +62,6 @@ app.use(`/api/${apiVersion}/playlists`, playlistRoutes);
 app.use(`/api/${apiVersion}/tags`, tagsRoutes);
 app.use(`/api/${apiVersion}/students`, studentsRoutes);
 app.use(`/api/${apiVersion}/fees`, feesRoutes); 
-app.use(`/api/${apiVersion}/batch`, batchRoutes); 
-
 // Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

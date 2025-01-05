@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 
 # Step 4: Install dependencies
-RUN npm install
+RUN npm install --force
 
 # Step 5: Copy the rest of the application code
 COPY . .

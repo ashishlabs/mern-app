@@ -20,5 +20,11 @@ export const messages = {
   TAG_ALREADY_EXISTS: "Tag already exists for this user",
   TAGS_NOT_FOUND: "No tags found for this user",
   TAGS_FETCHED: "Tags fetched successfully",
-
+  STUDENT_ADDED: "Student added successfully",
+  STUDENT_NOT_FOUND: "Student not found",
+  STUDENT_FETCHED: "Student fetched successfully",
+  STUDENT_ALREADY_EXISTS: "Student already exists",
+  BATCH_ADDED: "Batch added successfully",
+  BATCH_NOT_FOUND: "Batch not found",
+  BATCH_FETCHED: "Batch fetched successfully",
 };

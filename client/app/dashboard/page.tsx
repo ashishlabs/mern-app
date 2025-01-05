@@ -16,12 +16,6 @@ const Dashboard = () => {
             description: "Listen to your favorite songs",
             icon: faMusic,
             link: "/songs",
-        },
-        {
-            name: "Maps",
-            description: "Show location on map",
-            icon: faMap,
-            link: "/maps",
         }
     ];
 

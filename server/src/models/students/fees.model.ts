@@ -12,11 +12,10 @@ interface IFees extends Document {
 const feesSchema: Schema = new Schema({
     studentId: { type: mongoose.Schema.Types.ObjectId, ref: 'Student', required: true },
     amountPaid: { type: Number, required: true },
-    dueAmount: { type: Number, required: true },
     paymentDate: { type: Date, required: true, default: Date.now },
     paymentMethod: {
-        type: String, required: true, enum: ["cash", "upi"],
-        default: "cash"
+        type: String, required: true, enum: ["Cash", "UPI"],
+        default: "Cash"
     },
 }, {
     timestamps: true,

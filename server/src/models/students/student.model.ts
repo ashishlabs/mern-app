@@ -7,6 +7,8 @@ const StudentSchema = new mongoose.Schema({
     class: { type: String },
     batch: { type: String, enum: ["4pm-6pm", "5pm-7pm"], default: "4pm-6pm" },
     createdDate: { type: Date, default: Date.now },
+    isDeleted: { type: Boolean, default: false  },
+    deletedAt: { type: Date, default: Date.now },
 
 });
 

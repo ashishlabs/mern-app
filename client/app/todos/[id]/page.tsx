@@ -3,6 +3,7 @@
 import ConfirmationModal from '@/components/ConfirmationModal';
 import HomeLayout from '@/components/home/Home';
 import DatePicker from '@/components/todo/DatePicker';
+import ContainerLayout from '@/components/ui/container';
 import { Todo } from '@/model/todo/todo';
 import { apiFetch } from '@/utils/api';
 import { ROUTES } from '@/utils/routes';
@@ -205,7 +206,7 @@ const TodoDetails = () => {
   }
   return (
     <HomeLayout>
-      <div className="flex flex-col p-4 sm:p-8 lg:px-48  min-h-screen bg-gray-100">
+      <ContainerLayout>
         <h2 className="text-lg sm:text-xl font-bold mb-4">{todoToEdit ? "Edit Task" : "Create Task"}</h2>
         <form onSubmit={handleCreateOrUpdateTodo} onKeyDown={handleKeyDown} className="space-y-4">
           <div className="flex flex-col">
@@ -339,8 +340,7 @@ const TodoDetails = () => {
             Delete
           </button>
         )}
-      </div>
-
+      </ContainerLayout>
       <ConfirmationModal
         isOpen={isConfirmationModalOpen}
         onClose={() => setIsConfirmationModalOpen(false)}

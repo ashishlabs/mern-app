@@ -16,10 +16,6 @@ export async function apiFetch(url: string, options: any = {}) {
     headers,
   });
 
-  // Check for successful response
-  if (!response.ok) {
-    throw new Error(`Error: ${response.statusText}`);
-  }
 
   // If expecting a binary response (e.g., audio), return a Blob
   if (options.responseType === 'blob') {

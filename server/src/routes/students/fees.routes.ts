@@ -1,13 +1,11 @@
 // routes/fees/fees.routes.ts
 import express from 'express';
-import { addFeePayment, getFeePayments } from '../../controllers/students/fees.controller';
+import { addFeePayment, deleteFees, getFeePayments, updateFees } from '../../controllers/students/fees.controller';
 
 const router = express.Router();
-
-// Route to add fee payment
 router.post('/', addFeePayment);
-
-// Route to get all fee payments
-router.get('/', getFeePayments);
+router.get('/:id', getFeePayments);
+router.post('/:id', updateFees);
+router.delete('/:id', deleteFees);
 
 export default router;

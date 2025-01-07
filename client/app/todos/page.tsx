@@ -12,6 +12,7 @@ import HomeLayout from "@/components/home/Home";
 import { useDeviceType } from "@/utils/mobile";
 import { ROUTES } from "@/utils/routes";
 import { Todo } from "@/model/todo/todo";
+import { apiFetch } from "@/utils/api";
 
 
 
@@ -52,27 +53,19 @@ export default function Todos() {
 
     const fetchTodos = async () => {
         const token = localStorage.getItem("token");
-        const userId = localStorage.getItem("userId");
-        if (!token || !userId) {
+        if (!token) {
             router.push(ROUTES.LOGIN);
             return;
         }
 
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/todos?query=${searchQuery}&status=${filterStatus}&sortBy=${sortOption}&page=${currentPage}&limit=${todosPerPage}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    userId: userId
-                },
-            });
+            const response = await apiFetch(
+                `${process.env.NEXT_PUBLIC_API_BASE_URL}/todos?query=${searchQuery}&status=${filterStatus}
+                &sortBy=${sortOption}&page=${currentPage}&limit=${todosPerPage}`);
 
-            if (!response.ok) {
-                throw new Error("Failed to fetch todos");
-            }
 
-            const result = await response.json();
-            setTodos(Array.isArray(result.data.todos) ? result.data.todos : []);
-            setTotalCount(result.data.totalCount);
+            setTodos(Array.isArray(response.data.todos) ? response.data.todos : []);
+            setTotalCount(response.data.totalCount);
         } catch (error) {
             console.error("Fetch todos error:", error);
         } finally {
@@ -89,19 +82,8 @@ export default function Todos() {
         }
 
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/todos/search?query=${query}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    userid: userId,
-                },
-            });
-
-            if (!response.ok) {
-                throw new Error("Failed to fetch todos");
-            }
-
-            const result = await response.json();
-            setTodos(Array.isArray(result.data) ? result.data : []);
+            const response = await apiFetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/todos/search?query=${query}`);
+            setTodos(Array.isArray(response.data) ? response.data : []);
         } catch (error) {
             console.error("Fetch todos error:", error);
         } finally {
@@ -126,21 +108,11 @@ export default function Todos() {
         }
 
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/todos/${todoId}/status`, {
+            const response = await apiFetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/todos/${todoId}/status`, {
                 method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify({ status: newStatus }),
+                body: { status: newStatus },
             });
-
-            if (!response.ok) {
-                throw new Error("Failed to update todo status");
-            }
-
-            const updatedTodo = await response.json();
-            setTodos(todos.map(todo => (todo._id === todoId ? { ...todo, status: updatedTodo.data.status } : todo)));
+            setTodos(todos.map(todo => (todo._id === todoId ? { ...todo, status: response.data.status } : todo)));
         } catch (error) {
             console.error("Update todo status error:", error);
         }

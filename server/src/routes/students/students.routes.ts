@@ -1,13 +1,11 @@
 import { Router } from "express";
-import { getStudents, saveStudent } from "../../controllers/students/student.controller";
+import { deleteStudent, getStudentById, getStudents, restoreStudent, saveStudent, updateStudent } from "../../controllers/students/student.controller";
 
 const router = Router();
-
-//Add Tags
 router.post("/", saveStudent);
-
-//Get Tags
-router.get("/", getStudents); 
-
-
+router.get("/", getStudents);
+router.get("/:id", getStudentById);
+router.post("/:id", updateStudent);
+router.delete("/:id", deleteStudent);
+router.put("/:id", restoreStudent);
 export default router;

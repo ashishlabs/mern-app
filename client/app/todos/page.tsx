@@ -52,6 +52,7 @@ export default function Todos() {
     }, [searchQuery, filterStatus, sortOption, currentPage]);
 
     const fetchTodos = async () => {
+        console.log(filterStatus);
         const token = localStorage.getItem("token");
         if (!token) {
             router.push(ROUTES.LOGIN);
@@ -60,10 +61,7 @@ export default function Todos() {
 
         try {
             const response = await apiFetch(
-                `${process.env.NEXT_PUBLIC_API_BASE_URL}/todos?query=${searchQuery}&status=${filterStatus}
-                &sortBy=${sortOption}&page=${currentPage}&limit=${todosPerPage}`);
-
-
+                `${process.env.NEXT_PUBLIC_API_BASE_URL}/todos?query=${searchQuery}&status=${filterStatus}&sortBy=${sortOption}&page=${currentPage}&limit=${todosPerPage}`);
             setTodos(Array.isArray(response.data.todos) ? response.data.todos : []);
             setTotalCount(response.data.totalCount);
         } catch (error) {

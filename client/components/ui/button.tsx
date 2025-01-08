@@ -18,6 +18,12 @@ const buttonVariants = cva(
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
+        "primary-subtle":
+          "bg-primary/10 text-primary hover:bg-primary/20",
+        "secondary-subtle":
+          "bg-secondary/10 text-secondary hover:bg-secondary/20",
+        "destructive-subtle":
+          "bg-destructive/10 text-destructive hover:bg-destructive/20",
       },
       size: {
         default: "h-10 px-4 py-2",
@@ -31,11 +37,12 @@ const buttonVariants = cva(
       size: "default",
     },
   }
-)
+);
+
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
+  VariantProps<typeof buttonVariants> {
   asChild?: boolean
 }
 

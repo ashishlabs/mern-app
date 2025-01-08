@@ -1,6 +1,27 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+:root {
+  --background: 0 0% 100%; /* White */
+  --foreground: 220 13% 13%; /* Almost black */
+  --primary: 220 98% 61%; /* Blue */
+  --primary-foreground: 0 0% 100%; /* White */
+  --secondary: 219 15% 25%; /* Grayish Blue */
+  --secondary-foreground: 0 0% 100%; /* White */
+  --muted: 210 16% 82%; /* Light Gray */
+  --muted-foreground: 219 15% 25%; /* Dark Gray */
+  --destructive: 0 78% 62%; /* Red */
+  --destructive-foreground: 0 0% 100%; /* White */
+  --card: 0 0% 100%; /* White */
+  --card-foreground: 220 13% 13%; /* Almost black */
+  --popover: 0 0% 96%; /* Light Gray */
+  --popover-foreground: 220 13% 13%; /* Almost black */
+  --border: 0 0% 80%; /* Light Gray Border */
+  --input: 0 0% 96%; /* Input Background */
+  --ring: 220 98% 61%; /* Blue (for focus rings) */
+  --radius: 8px; /* Default border radius */
+}
+
 
 /* Add your global styles here */
 body {

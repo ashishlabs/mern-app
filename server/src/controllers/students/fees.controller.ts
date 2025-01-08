@@ -7,7 +7,6 @@ import { messages } from '../../config/message';
 import logger from '../../utils/logger';
 import { getUserIdFromToken } from '../../utils/auth';
 
-// Add new fee payment
 export const addFeePayment = async (req: Request, res: Response) => {
   const { studentId, amountPaid, dueAmount, paymentDate, paymentMethod } = req.body;
 
@@ -20,20 +19,21 @@ export const addFeePayment = async (req: Request, res: Response) => {
     });
 
     await newFee.save();
-    res.status(201).json({ message: 'Fee payment added successfully', fee: newFee });
+    sendResponse(res, statusCodes.OK, messages.FEES_ADDED, newFee);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to add fee payment', details: error });
+    logger.error("addFeePayment: %o", error);
+    sendResponse(res, statusCodes.INTERNAL_SERVER_ERROR, messages.ERROR_OCCURRED, {});
   }
 };
 
-// Get all fee payments
 export const getFeePayments = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
     const fees = await Fees.find({ studentId: id });
     sendResponse(res, statusCodes.OK, messages.FEES_FETCHED, fees);
   } catch (error) {
-    sendResponse(res, statusCodes.OK, messages.ERROR_OCCURRED, {});
+    logger.error("getFeePayments: %o", error);
+    sendResponse(res, statusCodes.INTERNAL_SERVER_ERROR, messages.ERROR_OCCURRED, {});
   }
 };
 
@@ -59,7 +59,7 @@ export const updateFees = async (req: Request, res: Response): Promise<void> => 
 
       sendResponse(res, statusCodes.OK, messages.STUDENT_UPDATED, existingFees);
   } catch (error) {
-      logger.error("Error updating student: %o", error);
+      logger.error("updateFees: %o", error);
       sendResponse(res, statusCodes.INTERNAL_SERVER_ERROR, messages.ERROR_OCCURRED);
   }
 };
@@ -77,7 +77,7 @@ export const deleteFees = async (req: Request, res: Response): Promise<void> => 
 
     sendResponse(res, statusCodes.OK, messages.FEES_DELETED, deleteFees);
   } catch (error) {
-    logger.error("Error deleting student: %o", error);
+    logger.error("deleteFees: %o", error);
     sendResponse(res, statusCodes.INTERNAL_SERVER_ERROR, messages.ERROR_OCCURRED);
   }
 };

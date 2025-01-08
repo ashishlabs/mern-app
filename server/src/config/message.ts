@@ -33,6 +33,7 @@ export const messages = {
   FEES_FETCHED: "Fees fetched successfully",
   FEES_ALREADY_EXISTS: "Fees already exists",
   FEES_UPDATED: "Fees updated successfully",
+  FEES_ADDED: "Fees added successfully",
   FEES_NOT_FOUND:"Fees not found",
   FEES_DELETED: "Fees deleted successfully",
 };

@@ -131,7 +131,7 @@ const StudentDetails = () => {
     return (
         <HomeLayout>
             <ContainerLayout>
-                <div className="space-y-6 mx-auto p-4 bg-white rounded-md shadow-md group">
+                <div className="space-y-2 mx-auto p-4 bg-white rounded-md shadow-md group">
                     <div className="flex justify-between">
                         <h2 className="text-xl font-semibold text-gray-800 justify-start">
                             {id !== ROUTES.ADD_STUDENTS ? "Student Details" : "Add New Student"}
@@ -140,8 +140,8 @@ const StudentDetails = () => {
                             {!isEditing ? (
                                 <Button
                                     onClick={() => setIsEditing(true)}
-                                    className="bg-blue-600 text-white hover:bg-blue-700 p-2 
-                                    rounded-md shadow-sm opacity-100  sm:opacity-0 group-hover:opacity-100"
+                                    variant="primary-subtle"
+                                    size="sm"
                                 >
                                     <FontAwesomeIcon icon={faEdit} />
                                 </Button>
@@ -149,7 +149,8 @@ const StudentDetails = () => {
                                 <Button
                                     title="Save"
                                     onClick={() => saveStudent()}
-                                    className="bg-blue-600 text-white hover:bg-blue-700 p-2 rounded-md shadow-sm"
+                                    variant="primary-subtle"
+                                    size="sm"
                                 >
                                     <FontAwesomeIcon icon={faSave} />
                                 </Button>
@@ -158,8 +159,8 @@ const StudentDetails = () => {
                             {id !== ROUTES.ADD_STUDENTS && (
                                 <Button
                                     onClick={() => setIsConfirmationModalOpen(true)}
-                                    className="bg-red-600 text-white hover:bg-red-700 p-2 rounded-md shadow-sm
-                                    opacity-100  sm:opacity-0 group-hover:opacity-100"
+                                    variant="destructive-subtle"
+                                    size="sm"
                                 >
                                     <FontAwesomeIcon icon={faTrash} />
                                 </Button>
@@ -243,14 +244,15 @@ const StudentDetails = () => {
 
                 </div>
                 <div className="space-y-6 mx-auto p-4 mt-4 bg-white rounded-md shadow-md">
-                    <Tabs defaultValue="transaction" >
+                    <FeesTable />
+                    {/* <Tabs defaultValue="transaction" >
                         <TabsList>
                             <TabsTrigger value="transaction">Transaction</TabsTrigger>
                         </TabsList>
                         <TabsContent value="transaction">
-                            <FeesTable />
+
                         </TabsContent>
-                    </Tabs>
+                    </Tabs> */}
 
 
                 </div>

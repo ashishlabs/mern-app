@@ -4,4 +4,5 @@ export interface Student {
     age: number;
     class: string;
     batch: string;
+    isDeleted?: boolean
 }

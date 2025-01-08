@@ -39,7 +39,8 @@ const StudentDetails: React.FC = () => {
                     {students?.map((student) => (
                         <Card
                             key={student.name}
-                            className="shadow-sm hover:shadow-md transition-shadow duration-300 rounded-lg border border-gray-200"
+                            onClick={() => addStudent(student._id)}
+                            className="cursor-pointer shadow-sm hover:shadow-md transition-shadow duration-300 rounded-lg border border-gray-200"
                         >
                             <CardHeader className="flex flex-row gap-4 items-center p-4 bg-gray-50 rounded-t-lg">
                                 <Avatar>
@@ -74,15 +75,6 @@ const StudentDetails: React.FC = () => {
                                     </div>
                                 </div>
                             </CardContent>
-                            <CardFooter className="p-4 border-t border-gray-200 bg-gray-50 rounded-b-lg">
-                                <Button
-                                    onClick={() => addStudent(student._id)}
-                                    variant="outline"
-                                    className="w-full text-sm font-medium text-blue-600 border-blue-600 hover:bg-blue-100"
-                                >
-                                    View Details
-                                </Button>
-                            </CardFooter>
                         </Card>
                     ))}
                 </div>

@@ -13,7 +13,7 @@ import { apiFetch } from "@/utils/api";
 import { ROUTES } from "@/utils/routes";
 import LabsField from "@/components/students/LabsField";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit, faExclamationTriangle, faSave, faTrash, faTrashRestore } from "@fortawesome/free-solid-svg-icons";
+import { faEdit, faExclamationTriangle, faRocket, faSave, faTrash, faTrashRestore } from "@fortawesome/free-solid-svg-icons";
 import { StatusCodes } from "@/utils/statusCodes";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
@@ -68,13 +68,13 @@ const StudentDetails = () => {
             },
         });
         switch (response?.statusCode) {
-            case StatusCodes.OK:
+            case StatusCodes.CREATED:
                 toast({
                     title: response?.message,
                     variant: "success",
                 });
                 if (id === ROUTES.ADD_STUDENTS) {
-                    router.push(ROUTES.STUDENTS);
+                    router.push(`${ROUTES.STUDENTS}/${response.data._id}`);
                 } else {
                     setIsEditing(false);
                 }
@@ -122,8 +122,26 @@ const StudentDetails = () => {
                 method: "PUT",
             });
 
-        if (response.data) {
-            router.push(ROUTES.STUDENTS);
+        switch (response?.statusCode) {
+            case StatusCodes.OK:
+                toast({
+                    title: response?.message,
+                    variant: "success",
+                });
+                if (id === ROUTES.ADD_STUDENTS) {
+                    router.push(`${ROUTES.STUDENTS}/${response.data._id}`);
+                } else {
+                    setIsEditing(false);
+                }
+                break;
+        }
+    }
+
+    const openStudent = () => {
+        if (id === ROUTES.ADD_STUDENTS) {
+            router.push(`${ROUTES.STUDENTS}/${deletedStudent._id}`);
+        } else {
+            setIsEditing(false);
         }
     }
 
@@ -228,15 +246,21 @@ const StudentDetails = () => {
                             />
                             <div className="flex-1">
                                 <p className="font-medium">{deletedStudent?.name} already exists!</p>
-                                <p className="text-sm">Do you want to restore the existing student record?</p>
+                                {deletedStudent?.isDeleted &&
+                                    <p className="text-sm">Do you want to restore the existing student record?</p>}
                             </div>
-                            <Button
+                            {deletedStudent?.isDeleted && <Button
                                 className="bg-yellow-500 text-white hover:bg-yellow-600 p-2 rounded-md shadow-sm flex items-center gap-2"
                                 onClick={handleRestore}
                             >
                                 <FontAwesomeIcon icon={faTrashRestore} />
                                 <span>Restore</span>
-                            </Button>
+                            </Button>}
+                            {!deletedStudent?.isDeleted &&
+                                <Button variant="primary-subtle" size="sm" onClick={openStudent}>
+                                    <FontAwesomeIcon icon={faRocket} />
+                                    <span>Open Student</span>
+                                </Button>}
                         </div>
                     )}
 
@@ -263,7 +287,7 @@ const StudentDetails = () => {
                 onConfirm={deleteStudent}
                 message="Are you sure you want to remove this student?"
             />
-        </HomeLayout>
+        </HomeLayout >
     );
 };
 

@@ -27,7 +27,9 @@ const FeesTable = () => {
     ];
 
     useEffect(() => {
-        getFeesData();
+        if (id !== ROUTES.ADD_STUDENTS) {
+            getFeesData();
+        }
     }, []);
 
     const openModal = (fee = null) => {

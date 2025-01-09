@@ -1,6 +1,6 @@
 import cron from "node-cron";
-import Todo from "../models/todo.model";
-import User from "../models/user.model";
+import Todo from "../models/todo/todo.model";
+import User from "../models/user/user.model";
 import { sendNotification } from "./webPush";
 import logger from "./logger";
 

@@ -1,7 +1,7 @@
 import webPush from "web-push";
-import User from "../models/user.model"; // Assuming you have a User model
+import User from "../models/user/user.model"; // Assuming you have a User model
 import logger from "./logger";
-import Notification from "../models/notification.model";
+import Notification from "../models/notification/notification.model";
 
 const publicVapidKey = process.env.PUBLIC_VAPID_KEY!;
 const privateVapidKey = process.env.PRIVATE_VAPID_KEY!;

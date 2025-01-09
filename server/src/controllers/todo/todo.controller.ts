@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
-import Todo, { ITodo } from "../models/todo.model";
-import Tag from "../models/tag.model";
-import { sendResponse } from "../utils/response";
-import logger from "../utils/logger";
-import { messages } from "../config/message";
-import { statusCodes } from "../config/status.code";
-import { getUserIdFromToken } from "../utils/auth";
+import Todo, { ITodo } from "../../models/todo/todo.model";
+import Tag from "../../models/tag/tag.model";
+import { sendResponse } from "../../utils/response";
+import logger from "../../utils/logger";
+import { messages } from "../../config/message";
+import { statusCodes } from "../../config/status.code";
+import { getUserIdFromToken } from "../../utils/auth";
 
 export const createTodo = async (req: Request, res: Response, next: Function): Promise<void> => {
   const { title, description, status, priority, tags, dueDate } = req.body;

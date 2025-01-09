@@ -2,7 +2,7 @@ import { Router } from "express";
 import { createTodo,
      readTodos, 
      updateTodo, 
-     deleteTodo, updateTodoStatus, getTodoById, searchTodos} from "../../controllers/todo.controller";
+     deleteTodo, updateTodoStatus, getTodoById, searchTodos} from "../../controllers/todo/todo.controller";
 
 const router = Router();
 

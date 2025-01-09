@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import User from "../models/user.model"; // Assuming you have a User model
-import Notification from "../models/notification.model";
-import { getUserIdFromToken } from "../utils/auth";
+import User from "../../models/user/user.model";
+import { getUserIdFromToken } from "../../utils/auth";
+import Notification from "../../models/notification/notification.model";
 
 export const subscribe = async (req: Request, res: Response): Promise<void> => {
   const { subscription } = req.body;

@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
-import Tag from "../models/tag.model";
-import { sendResponse } from "../utils/response";
-import logger from "../utils/logger";
-import { messages } from "../config/message";
-import { statusCodes } from "../config/status.code";
-import { getUserIdFromToken } from "../utils/auth";
+import { getUserIdFromToken } from "../../utils/auth";
+import { sendResponse } from "../../utils/response";
+import { statusCodes } from "../../config/status.code";
+import { messages } from "../../config/message";
+import Tag from "../../models/tag/tag.model";
+import logger from "../../utils/logger";
 
 export const addTag = async (req: Request, res: Response): Promise<void> => {
   const { tag } = req.body;

@@ -3,3 +3,4 @@ server/node_modules
 server/dist
 client/.next
 server/src/music
+cypress

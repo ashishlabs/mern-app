@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import User from "../models/user.model";
-import { sendResponse } from "../utils/response";
-import logger from "../utils/logger";
-import { messages } from "../config/message";
-import { statusCodes } from "../config/status.code";
+import User from "../../models/user/user.model";
+import { statusCodes } from "../../config/status.code";
+import { sendResponse } from "../../utils/response";
+import { messages } from "../../config/message";
+import logger from "../../utils/logger";
 
 const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret";
 

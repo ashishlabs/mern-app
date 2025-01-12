@@ -21,24 +21,33 @@ const Navigation = () => {
   };
 
   return (
-    <header className="bg-gray-800 text-white p-4 sticky top-0 z-10">
+    <header className="bg-slate-800 text-slate-100 p-4 sticky top-0 z-10 shadow-md transition-all duration-300">
       <div className="container mx-auto flex justify-between items-center">
-        <div className="flex items-center space-x-4">
-          <Link href={ROUTES.DASHBOARD} className="flex items-center">
+        <div className="flex items-center space-x-6">
+          <Link href={ROUTES.DASHBOARD} className="flex items-center transition-transform hover:scale-105">
             <img
               src="/logo.svg"
               alt="Ashish Labs Logo"
               className="h-8 w-auto"
             />
           </Link>
-          <div className="hidden md:flex space-x-4">
-            <Link href={ROUTES.DASHBOARD} className="hover:text-gray-300">
+          <div className="hidden md:flex space-x-6">
+            <Link
+              href={ROUTES.DASHBOARD}
+              className="hover:text-teal-300 transition-colors duration-200 py-2 border-b-2 border-transparent hover:border-teal-300"
+            >
               Dashboard
             </Link>
-            <Link href={ROUTES.TODOS} className="hover:text-gray-300">
+            <Link
+              href={ROUTES.TODOS}
+              className="hover:text-teal-300 transition-colors duration-200 py-2 border-b-2 border-transparent hover:border-teal-300"
+            >
               Tasks
             </Link>
-            <Link href={ROUTES.PLAYLIST} className="hover:text-gray-300">
+            <Link
+              href={ROUTES.SONGS}
+              className="hover:text-teal-300 transition-colors duration-200 py-2 border-b-2 border-transparent hover:border-teal-300"
+            >
               Music
             </Link>
           </div>
@@ -46,26 +55,39 @@ const Navigation = () => {
         <div className="hidden md:flex items-center space-x-4">
           <button
             onClick={handleLogout}
-            className="bg-red-500 hover:bg-red-700 text-white py-2 px-4 rounded"
+            id="btn-logout"
+            className="bg-rose-500 hover:bg-rose-600 text-white py-2 px-6 rounded-lg transition-colors duration-200 shadow-sm hover:shadow"
           >
             Logout
           </button>
         </div>
         <div className="md:hidden">
-          <button onClick={toggleMenu} className="focus:outline-none">
-            <FontAwesomeIcon icon={isOpen ? faTimes : faBars} />
+          <button onClick={toggleMenu} className="focus:outline-none hover:text-teal-300 transition-colors duration-200">
+            <FontAwesomeIcon icon={isOpen ? faTimes : faBars} className="text-xl" />
           </button>
         </div>
       </div>
       {isOpen && (
-        <div className="md:hidden mt-4">
-          <Link href={ROUTES.DASHBOARD} className="block py-2 px-4 hover:bg-gray-700" onClick={toggleMenu}>
+        <div className="md:hidden mt-4 bg-slate-700 rounded-lg overflow-hidden shadow-lg transition-all duration-300">
+          <Link
+            href={ROUTES.DASHBOARD}
+            className="block py-3 px-6 hover:bg-slate-600 transition-colors duration-200"
+            onClick={toggleMenu}
+          >
             Dashboard
           </Link>
-          <Link href={ROUTES.TODOS} className="block py-2 px-4 hover:bg-gray-700" onClick={toggleMenu}>
+          <Link
+            href={ROUTES.TODOS}
+            className="block py-3 px-6 hover:bg-slate-600 transition-colors duration-200"
+            onClick={toggleMenu}
+          >
             Todo
           </Link>
-          <Link href={ROUTES.PLAYLIST} className="block py-2 px-4 hover:bg-gray-700" onClick={toggleMenu}>
+          <Link
+            href={ROUTES.SONGS}
+            className="block py-3 px-6 hover:bg-slate-600 transition-colors duration-200"
+            onClick={toggleMenu}
+          >
             Music
           </Link>
           <button
@@ -73,7 +95,7 @@ const Navigation = () => {
               toggleMenu();
               handleLogout();
             }}
-            className="block w-full text-left py-2 px-4 bg-red-500 hover:bg-red-700 text-white"
+            className="block w-full text-left py-3 px-6 bg-rose-500 hover:bg-rose-600 text-white transition-colors duration-200"
           >
             Logout
           </button>

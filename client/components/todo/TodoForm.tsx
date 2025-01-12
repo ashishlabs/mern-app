@@ -61,10 +61,10 @@ export default function TodoForm({
 }: TodoFormProps) {
     return (
         <>
-            <h2 className="text-xl font-bold mb-4">{todoToEdit ? "Edit Todo" : "Create Todo"}</h2>
-            <form onSubmit={handleCreateOrUpdateTodo} onKeyDown={handleKeyDown}>
-                <div className="mb-4">
-                    <label htmlFor="title" className="block text-sm font-medium text-gray-700">
+            <h2 className="text-2xl font-bold mb-6 text-gray-800">{todoToEdit ? "Edit Todo" : "Create Todo"}</h2>
+            <form onSubmit={handleCreateOrUpdateTodo} onKeyDown={handleKeyDown} className="space-y-6">
+                <div className="space-y-2">
+                    <label htmlFor="title" className="block text-sm font-semibold text-gray-700">
                         Title
                     </label>
                     <input
@@ -73,22 +73,22 @@ export default function TodoForm({
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
                         required
-                        className="mt-1 p-2 w-full border border-gray-300 rounded"
+                        className="mt-1 p-3 w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-200"
                     />
                 </div>
-                <div className="mb-4">
-                    <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+                <div className="space-y-2">
+                    <label htmlFor="description" className="block text-sm font-semibold text-gray-700">
                         Description
                     </label>
                     <textarea
                         id="description"
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
-                        className="mt-1 p-2 w-full border border-gray-300 rounded"
+                        className="mt-1 p-3 w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-200 min-h-[100px]"
                     />
                 </div>
-                <div className="mb-4">
-                    <label htmlFor="status" className="block text-sm font-medium text-gray-700">
+                <div className="space-y-2">
+                    <label htmlFor="status" className="block text-sm font-semibold text-gray-700">
                         Status
                     </label>
                     <select
@@ -96,53 +96,53 @@ export default function TodoForm({
                         value={status}
                         onChange={(e) => setStatus(e.target.value)}
                         required
-                        className="mt-1 p-2 w-full border border-gray-300 rounded"
+                        className="mt-1 p-3 w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-200 bg-white"
                     >
-                        <option value="pending">Pending</option>
-                        <option value="in-progress">In Progress</option>
-                        <option value="completed">Completed</option>
+                        <option value="pending">📋 Pending</option>
+                        <option value="in-progress">🔄 In Progress</option>
+                        <option value="completed">✅ Completed</option>
                     </select>
                 </div>
-                <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700">Priority</label>
-                    <div className="flex space-x-4">
-                        <label className="flex items-center">
+                <div className="space-y-2">
+                    <label className="block text-sm font-semibold text-gray-700">Priority</label>
+                    <div className="flex space-x-6">
+                        <label className="flex items-center cursor-pointer group">
                             <input
                                 type="radio"
                                 name="priority"
                                 value="low"
                                 checked={priority === "low"}
                                 onChange={(e) => setPriority(e.target.value)}
-                                className="form-radio"
+                                className="form-radio text-green-500 focus:ring-green-400"
                             />
-                            <span className="ml-2">Low</span>
+                            <span className="ml-2 text-gray-700 group-hover:text-green-600 transition-colors">Low</span>
                         </label>
-                        <label className="flex items-center">
+                        <label className="flex items-center cursor-pointer group">
                             <input
                                 type="radio"
                                 name="priority"
                                 value="medium"
                                 checked={priority === "medium"}
                                 onChange={(e) => setPriority(e.target.value)}
-                                className="form-radio"
+                                className="form-radio text-yellow-500 focus:ring-yellow-400"
                             />
-                            <span className="ml-2">Medium</span>
+                            <span className="ml-2 text-gray-700 group-hover:text-yellow-600 transition-colors">Medium</span>
                         </label>
-                        <label className="flex items-center">
+                        <label className="flex items-center cursor-pointer group">
                             <input
                                 type="radio"
                                 name="priority"
                                 value="high"
                                 checked={priority === "high"}
                                 onChange={(e) => setPriority(e.target.value)}
-                                className="form-radio"
+                                className="form-radio text-red-500 focus:ring-red-400"
                             />
-                            <span className="ml-2">High</span>
+                            <span className="ml-2 text-gray-700 group-hover:text-red-600 transition-colors">High</span>
                         </label>
                     </div>
                 </div>
-                <div className="mb-4">
-                    <label htmlFor="dueDate" className="block text-sm font-medium text-gray-700">
+                <div className="space-y-2">
+                    <label htmlFor="dueDate" className="block text-sm font-semibold text-gray-700">
                         Due Date
                     </label>
                     <input
@@ -151,11 +151,11 @@ export default function TodoForm({
                         value={dueDate}
                         onChange={(e) => setDueDate(e.target.value)}
                         required
-                        className="mt-1 p-2 w-full border border-gray-300 rounded"
+                        className="mt-1 p-3 w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-200"
                     />
                 </div>
-                <div className="mb-4">
-                    <label htmlFor="tags" className="block text-sm font-medium text-gray-700">
+                <div className="space-y-2">
+                    <label htmlFor="tags" className="block text-sm font-semibold text-gray-700">
                         Tags
                     </label>
                     <Autosuggest
@@ -165,32 +165,35 @@ export default function TodoForm({
                         getSuggestionValue={getSuggestionValue}
                         renderSuggestion={renderSuggestion}
                         inputProps={{
-                            placeholder: "Add a tag",
+                            placeholder: "Add a tag and press Enter",
                             value: tagInput,
                             onChange: handleTagInputChange,
                             onKeyDown: handleTagAddition,
                         }}
                         theme={{
-                            input: "mt-1 p-2 w-full border border-gray-300 rounded",
-                            suggestionsContainer: "absolute z-10 bg-white border border-gray-300 rounded mt-1",
-                            suggestion: "p-2 cursor-pointer",
-                            suggestionHighlighted: "bg-gray-200",
+                            input: "mt-1 p-3 w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-200",
+                            suggestionsContainer: "absolute z-10 bg-white border border-gray-300 rounded-lg shadow-lg mt-1 w-full",
+                            suggestion: "p-3 cursor-pointer hover:bg-gray-50 transition-colors",
+                            suggestionHighlighted: "bg-blue-50",
                         }}
                     />
-                    <div className="flex flex-wrap gap-2 mt-2">
+                    <div className="flex flex-wrap gap-2 mt-3">
                         {tags?.map((tag, index) => (
-                            <span key={index} className="bg-gray-200 px-2 py-1 rounded-full flex items-center">
+                            <span key={index} className="bg-blue-50 text-blue-700 px-3 py-1.5 rounded-full flex items-center group hover:bg-blue-100 transition-colors">
                                 {tag}
                                 <FontAwesomeIcon
                                     icon={faTimes}
-                                    className="ml-2 cursor-pointer"
+                                    className="ml-2 cursor-pointer opacity-60 group-hover:opacity-100 transition-opacity"
                                     onClick={() => handleTagRemove(tag)}
                                 />
                             </span>
                         ))}
                     </div>
                 </div>
-                <button type="submit" className="w-full py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-700">
+                <button 
+                    type="submit" 
+                    className="w-full py-3 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 transition-all duration-200 font-medium text-sm mt-6"
+                >
                     {todoToEdit ? "Update Todo" : "Create Todo"}
                 </button>
             </form>

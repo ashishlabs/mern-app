@@ -17,34 +17,33 @@ export default function Signup() {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
+    // If user is already logged in, redirect to dashboard instead of signup
     if (token) {
-      router.push(ROUTES.SIGNUP);
+      router.push(ROUTES.DASHBOARD);
     }
   }, [router]);
 
-  const evaluatePasswordStrength = (password: string) => {
-    let strength = 0;
-    if (password.length >= 8) strength++; // Length at least 8
-    if (/[A-Z]/.test(password)) strength++; // Contains uppercase letter
-    if (/[a-z]/.test(password)) strength++; // Contains lowercase letter
-    if (/[0-9]/.test(password)) strength++; // Contains number
-    if (/[@$!%*?&]/.test(password)) strength++; // Contains special character
+  const evaluatePasswordStrength = (password: string): string => {
+    const criteria = [
+      password.length >= 8,           // Length at least 8
+      /[A-Z]/.test(password),        // Contains uppercase letter  
+      /[a-z]/.test(password),        // Contains lowercase letter
+      /[0-9]/.test(password),        // Contains number
+      /[@$!%*?&]/.test(password)     // Contains special character
+    ];
 
-    switch (strength) {
-      case 0:
-      case 1:
-        return "Very Weak";
-      case 2:
-        return "Weak";
-      case 3:
-        return "Moderate";
-      case 4:
-        return "Strong";
-      case 5:
-        return "Very Strong";
-      default:
-        return "";
-    }
+    const strength = criteria.filter(Boolean).length;
+
+    const strengthMap = {
+      0: "Very Weak",
+      1: "Very Weak", 
+      2: "Weak",
+      3: "Moderate", 
+      4: "Strong",
+      5: "Very Strong"
+    };
+
+    return strengthMap[strength as keyof typeof strengthMap] || "";
   };
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -52,7 +51,11 @@ export default function Signup() {
     setPassword(newPassword);
     const strength = evaluatePasswordStrength(newPassword);
     setPasswordStrength(strength);
-    setIsSignupEnabled(strength === "Moderate" || strength === "Strong" || strength === "Very Strong");
+    // Enable signup if password is at least Moderate strength and email is valid
+    setIsSignupEnabled(
+      (strength === "Moderate" || strength === "Strong" || strength === "Very Strong") && 
+      email.includes('@') && email.includes('.')
+    );
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

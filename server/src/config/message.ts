@@ -36,4 +36,5 @@ export const messages = {
   FEES_ADDED: "Fees added successfully",
   FEES_NOT_FOUND:"Fees not found",
   FEES_DELETED: "Fees deleted successfully",
+  INVALID_INPUT:'Invalid input',
 };

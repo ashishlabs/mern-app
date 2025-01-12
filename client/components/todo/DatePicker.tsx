@@ -26,35 +26,54 @@ const DatePicker: React.FC<DatePickerProps> = ({ dueDate, setDueDate }) => {
     };
 
     return (
-        <div className="flex flex-col">
+        <div className="flex flex-col space-y-1.5">
             <Popover>
-                <label htmlFor="dueDate" className="text-sm font-medium text-gray-700">
+                <label htmlFor="dueDate" className="text-sm font-medium text-gray-600 dark:text-gray-300">
                     Due Date
                 </label>
                 <PopoverTrigger asChild>
                     <Button
                         variant={"outline"}
                         className={cn(
-                            "w-[280px] justify-start text-left font-normal",
+                            "w-[280px] justify-start text-left font-normal hover:bg-gray-50 dark:hover:bg-gray-800",
+                            "transition-colors duration-200",
+                            "gap-2",
                             !dueDate && "text-muted-foreground"
                         )}
                     >
-                        <CalendarIcon />
+                        <CalendarIcon className="h-4 w-4 text-gray-500 dark:text-gray-400" />
                         {dueDate ? format(dueDate, "PPP") : <span>Pick a date</span>}
                     </Button>
                 </PopoverTrigger>
-                <PopoverContent className="flex w-auto flex-col space-y-2 p-2">
-                    <div className="rounded-md border">
-                        <Calendar mode="single" selected={dueDate ? new Date(dueDate) : undefined} onSelect={(date) => setDueDate(date ? format(date, "yyyy-MM-dd") : "")} />
+                <PopoverContent className="flex w-auto flex-col space-y-3 p-3">
+                    <div className="rounded-md border shadow-sm">
+                        <Calendar 
+                            mode="single" 
+                            selected={dueDate ? new Date(dueDate) : undefined} 
+                            onSelect={(date) => setDueDate(date ? format(date, "yyyy-MM-dd") : "")}
+                            className="rounded-md"
+                        />
                     </div>
-                    <div className="flex flex-col">
-                        <Button variant="link" onClick={() => handleDateSelection(0)}>
+                    <div className="flex flex-col space-y-1">
+                        <Button 
+                            variant="ghost" 
+                            className="hover:bg-gray-100 dark:hover:bg-gray-800 justify-start" 
+                            onClick={() => handleDateSelection(0)}
+                        >
                             Today
                         </Button>
-                        <Button variant="link" onClick={() => handleDateSelection(1)}>
+                        <Button 
+                            variant="ghost" 
+                            className="hover:bg-gray-100 dark:hover:bg-gray-800 justify-start" 
+                            onClick={() => handleDateSelection(1)}
+                        >
                             Tomorrow
                         </Button>
-                        <Button variant="link" onClick={() => handleDateSelection(7)}>
+                        <Button 
+                            variant="ghost" 
+                            className="hover:bg-gray-100 dark:hover:bg-gray-800 justify-start" 
+                            onClick={() => handleDateSelection(7)}
+                        >
                             In a week
                         </Button>
                     </div>

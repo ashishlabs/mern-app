@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const NodeID3 = require('node-id3'); // Import node-id3
+const NodeID3 = require('node-id3');
 
 const songsFolder = path.join(__dirname, 'music');
 
@@ -9,10 +9,10 @@ async function getMetadata(filePath) {
         // Read the metadata from the MP3 file using node-id3
         const tags = NodeID3.read(filePath);
 
-        // Extract the necessary fields (title, artist, album, genre, duration, picture)
+        // Extract the necessary fields
         const { title, artist, album, genre, picture } = tags;
 
-        // Get the file duration (placeholder for now)
+        // Get the file duration
         const duration = getDuration(filePath);
 
         return {
@@ -20,9 +20,9 @@ async function getMetadata(filePath) {
             artist: artist || "Unknown Artist",
             album: album || "Unknown Album",
             genre: genre || "Unknown Genre",
-            duration: duration, // Duration in seconds
-            coverArt: picture ? `data:image/jpeg;base64,${picture.toString('base64')}` : null, // Return album art as Base64
-            thumbnail: picture ? `data:image/jpeg;base64,${picture.toString('base64')}` : null, // Return thumbnail as Base64
+            duration: duration,
+            coverArt: picture ? `data:image/jpeg;base64,${picture.toString('base64')}` : null,
+            thumbnail: picture ? `data:image/jpeg;base64,${picture.toString('base64')}` : null,
         };
     } catch (error) {
         console.error(`Error reading metadata for ${filePath}:`, error.message);
@@ -46,8 +46,7 @@ function getDuration(filePath) {
 
 async function getSongsData() {
     const songs = [];
-
-    const audioExtensions = ['.mp3']; // Limiting to MP3 for ID3 tag extraction
+    const audioExtensions = ['.mp3'];
     const files = fs.readdirSync(songsFolder);
 
     for (const [index, file] of files.entries()) {

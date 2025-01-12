@@ -1,25 +1,44 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 :root {
-  --background: 0 0% 100%; /* White */
-  --foreground: 220 13% 13%; /* Almost black */
-  --primary: 220 98% 61%; /* Blue */
-  --primary-foreground: 0 0% 100%; /* White */
-  --secondary: 219 15% 25%; /* Grayish Blue */
-  --secondary-foreground: 0 0% 100%; /* White */
-  --muted: 210 16% 82%; /* Light Gray */
-  --muted-foreground: 219 15% 25%; /* Dark Gray */
-  --destructive: 0 78% 62%; /* Red */
-  --destructive-foreground: 0 0% 100%; /* White */
-  --card: 0 0% 100%; /* White */
-  --card-foreground: 220 13% 13%; /* Almost black */
-  --popover: 0 0% 96%; /* Light Gray */
-  --popover-foreground: 220 13% 13%; /* Almost black */
-  --border: 0 0% 80%; /* Light Gray Border */
-  --input: 0 0% 96%; /* Input Background */
-  --ring: 220 98% 61%; /* Blue (for focus rings) */
-  --radius: 8px; /* Default border radius */
+  --background: 0 0% 100%;
+  /* White */
+  --foreground: 220 13% 13%;
+  /* Almost black */
+  --primary: 220 98% 61%;
+  /* Blue */
+  --primary-foreground: 0 0% 100%;
+  /* White */
+  --secondary: 219 15% 25%;
+  /* Grayish Blue */
+  --secondary-foreground: 0 0% 100%;
+  /* White */
+  --muted: 210 16% 82%;
+  /* Light Gray */
+  --muted-foreground: 219 15% 25%;
+  /* Dark Gray */
+  --destructive: 0 78% 62%;
+  /* Red */
+  --destructive-foreground: 0 0% 100%;
+  /* White */
+  --card: 0 0% 100%;
+  /* White */
+  --card-foreground: 220 13% 13%;
+  /* Almost black */
+  --popover: 0 0% 96%;
+  /* Light Gray */
+  --popover-foreground: 220 13% 13%;
+  /* Almost black */
+  --border: 0 0% 80%;
+  /* Light Gray Border */
+  --input: 0 0% 96%;
+  /* Input Background */
+  --ring: 220 98% 61%;
+  /* Blue (for focus rings) */
+  --radius: 8px;
+  /* Default border radius */
 }
 
 
@@ -38,23 +57,34 @@ body {
   height: 40px;
   animation: spin 2s linear infinite;
 }
+
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes equalizer {
-  0%, 100% {
-      transform: scaleY(1);
+
+  0%,
+  100% {
+    transform: scaleY(1);
   }
+
   25% {
-      transform: scaleY(1.3);
+    transform: scaleY(1.3);
   }
+
   50% {
-      transform: scaleY(0.8);
+    transform: scaleY(0.8);
   }
+
   75% {
-      transform: scaleY(1.1);
+    transform: scaleY(1.1);
   }
 }
 
@@ -90,6 +120,7 @@ body {
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
   }
+
   .dark {
     --background: 240 10% 3.9%;
     --foreground: 0 0% 98%;
@@ -121,8 +152,81 @@ body {
 @layer base {
   * {
     @apply border-border;
+    @apply transition-colors duration-200;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+}
+
+@keyframes music-bar-1 {
+
+  0%,
+  100% {
+    height: 8px;
+  }
+
+  50% {
+    height: 16px;
+  }
+}
+
+@keyframes music-bar-2 {
+
+  0%,
+  100% {
+    height: 16px;
+  }
+
+  50% {
+    height: 8px;
+  }
+}
+
+@keyframes music-bar-3 {
+
+  0%,
+  100% {
+    height: 8px;
+  }
+
+  50% {
+    height: 12px;
+  }
+}
+
+.animate-music-bar-1 {
+  animation: music-bar-1 0.8s ease-in-out infinite;
+}
+
+.animate-music-bar-2 {
+  animation: music-bar-2 0.8s ease-in-out infinite;
+}
+
+.animate-music-bar-3 {
+  animation: music-bar-3 0.8s ease-in-out infinite;
+}
+/* Add this CSS to your global styles or a relevant CSS file */
+::-webkit-scrollbar {
+  width: 8px; /* Width of the scrollbar */
+  height: 8px; /* Height of the scrollbar */
+}
+
+::-webkit-scrollbar-track {
+  background: transparent; /* Background of the scrollbar track */
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3); /* Color of the scrollbar thumb */
+  border-radius: 4px; /* Rounded corners for the scrollbar thumb */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5); /* Color on hover */
+}
+
+.scrollable {
+  scrollbar-width: thin; /* For Firefox */
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent; /* Thumb color and track color */
 }

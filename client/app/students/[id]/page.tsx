@@ -16,6 +16,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faExclamationTriangle, faRocket, faSave, faTrash, faTrashRestore } from "@fortawesome/free-solid-svg-icons";
 import { StatusCodes } from "@/utils/statusCodes";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Separator } from "@radix-ui/react-select";
 
 const StudentDetails = () => {
     const initialStudentState = {
@@ -68,7 +70,7 @@ const StudentDetails = () => {
             },
         });
         switch (response?.statusCode) {
-            case StatusCodes.CREATED:
+            case StatusCodes.OK:
                 toast({
                     title: response?.message,
                     variant: "success",
@@ -149,26 +151,28 @@ const StudentDetails = () => {
     return (
         <HomeLayout>
             <ContainerLayout>
-                <div className="space-y-2 mx-auto p-4 bg-white rounded-md shadow-md group">
-                    <div className="flex justify-between">
-                        <h2 className="text-xl font-semibold text-gray-800 justify-start">
+                <Card className="bg-white/50 backdrop-blur-sm">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+                        <h2 className="text-2xl font-semibold text-gray-800">
                             {id !== ROUTES.ADD_STUDENTS ? "Student Details" : "Add New Student"}
                         </h2>
-                        <div className="flex gap-3 justify-end">
+                        <div className="flex gap-3">
                             {!isEditing ? (
                                 <Button
                                     onClick={() => setIsEditing(true)}
-                                    variant="primary-subtle"
+                                    variant="outline"
                                     size="sm"
+                                    className="hover:bg-gray-100 transition-colors"
                                 >
-                                    <FontAwesomeIcon icon={faEdit} />
+                                    <FontAwesomeIcon icon={faEdit} className="text-gray-600" />
                                 </Button>
                             ) : (
                                 <Button
                                     title="Save"
                                     onClick={() => saveStudent()}
-                                    variant="primary-subtle"
+                                    variant="outline"
                                     size="sm"
+                                    className="hover:bg-green-50 text-green-600 transition-colors"
                                 >
                                     <FontAwesomeIcon icon={faSave} />
                                 </Button>
@@ -177,109 +181,111 @@ const StudentDetails = () => {
                             {id !== ROUTES.ADD_STUDENTS && (
                                 <Button
                                     onClick={() => setIsConfirmationModalOpen(true)}
-                                    variant="destructive-subtle"
+                                    variant="outline"
                                     size="sm"
+                                    className="hover:bg-red-50 text-red-600 transition-colors"
                                 >
                                     <FontAwesomeIcon icon={faTrash} />
                                 </Button>
                             )}
                         </div>
-                    </div>
+                    </CardHeader>
 
+                    <Separator className="my-2" />
 
-                    <div className="grid grid-cols-2 sm:grid-cols-2  md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <div className="col-span-1">
-                            <LabsField label="Name"
-                                isEditing={isEditing}
-                                inputType="text"
-                                placeholder="Enter name"
-                                value={newStudent.name}
-                                onChange={(value: string) =>
-                                    setNewStudent({ ...newStudent, name: value })
-                                }
-                            />
-                        </div>
-
-                        <div className="col-span-1">
-                            <LabsField label="Age"
-                                isEditing={isEditing}
-                                inputType="number"
-                                value={newStudent.age}
-                                placeholder="Enter age"
-                                onChange={(value: number) =>
-                                    setNewStudent({ ...newStudent, age: value })
-                                }
-                            />
-                        </div>
-
-                        <div className="col-span-1">
-                            <LabsField label="Class"
-                                isEditing={isEditing}
-                                inputType="text"
-                                value={newStudent.class}
-                                placeholder="Enter class"
-                                onChange={(value: string) =>
-                                    setNewStudent({ ...newStudent, class: value })
-                                }
-                            />
-                        </div>
-
-                        <div className="col-span-1">
-                            <LabsField label="Batch"
-                                isEditing={isEditing}
-                                inputType="text"
-                                value={newStudent.batch}
-                                fieldType="select"
-                                placeholder="Select batch"
-                                onChange={(value: string) =>
-                                    setNewStudent({ ...newStudent, batch: value })
-                                }
-                                options={batches}
-                            />
-                        </div>
-                    </div>
-                    {isRestore && (
-                        <div className="flex items-center p-4 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 rounded-md shadow-md">
-                            <FontAwesomeIcon
-                                icon={faExclamationTriangle}
-                                className="text-yellow-500 text-xl mr-3"
-                            />
-                            <div className="flex-1">
-                                <p className="font-medium">{deletedStudent?.name} already exists!</p>
-                                {deletedStudent?.isDeleted &&
-                                    <p className="text-sm">Do you want to restore the existing student record?</p>}
+                    <CardContent>
+                        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            <div className="col-span-1">
+                                <LabsField label="Name"
+                                    isEditing={isEditing}
+                                    inputType="text"
+                                    placeholder="Enter name"
+                                    value={newStudent.name}
+                                    onChange={(value: string) =>
+                                        setNewStudent({ ...newStudent, name: value })
+                                    }
+                                />
                             </div>
-                            {deletedStudent?.isDeleted && <Button
-                                className="bg-yellow-500 text-white hover:bg-yellow-600 p-2 rounded-md shadow-sm flex items-center gap-2"
-                                onClick={handleRestore}
-                            >
-                                <FontAwesomeIcon icon={faTrashRestore} />
-                                <span>Restore</span>
-                            </Button>}
-                            {!deletedStudent?.isDeleted &&
-                                <Button variant="primary-subtle" size="sm" onClick={openStudent}>
-                                    <FontAwesomeIcon icon={faRocket} />
-                                    <span>Open Student</span>
-                                </Button>}
+
+                            <div className="col-span-1">
+                                <LabsField label="Age"
+                                    isEditing={isEditing}
+                                    inputType="number"
+                                    value={newStudent.age}
+                                    placeholder="Enter age"
+                                    onChange={(value: number) =>
+                                        setNewStudent({ ...newStudent, age: value })
+                                    }
+                                />
+                            </div>
+
+                            <div className="col-span-1">
+                                <LabsField label="Class"
+                                    isEditing={isEditing}
+                                    inputType="text"
+                                    value={newStudent.class}
+                                    placeholder="Enter class"
+                                    onChange={(value: string) =>
+                                        setNewStudent({ ...newStudent, class: value })
+                                    }
+                                />
+                            </div>
+
+                            <div className="col-span-1">
+                                <LabsField label="Batch"
+                                    isEditing={isEditing}
+                                    inputType="text"
+                                    value={newStudent.batch}
+                                    fieldType="select"
+                                    placeholder="Select batch"
+                                    onChange={(value: string) =>
+                                        setNewStudent({ ...newStudent, batch: value })
+                                    }
+                                    options={batches}
+                                />
+                            </div>
                         </div>
-                    )}
 
+                        {isRestore && (
+                            <div className="mt-6 flex items-center p-4 bg-amber-50 border border-amber-200 text-amber-800 rounded-lg">
+                                <FontAwesomeIcon
+                                    icon={faExclamationTriangle}
+                                    className="text-amber-500 text-xl mr-3"
+                                />
+                                <div className="flex-1">
+                                    <p className="font-medium">{deletedStudent?.name} already exists!</p>
+                                    {deletedStudent?.isDeleted && (
+                                        <p className="text-sm text-amber-700">Do you want to restore the existing student record?</p>
+                                    )}
+                                </div>
+                                {deletedStudent?.isDeleted ? (
+                                    <Button
+                                        className="bg-amber-100 text-amber-800 hover:bg-amber-200 transition-colors"
+                                        onClick={handleRestore}
+                                    >
+                                        <FontAwesomeIcon icon={faTrashRestore} className="mr-2" />
+                                        <span>Restore</span>
+                                    </Button>
+                                ) : (
+                                    <Button
+                                        variant="outline"
+                                        className="border-amber-200 text-amber-800 hover:bg-amber-100"
+                                        onClick={openStudent}
+                                    >
+                                        <FontAwesomeIcon icon={faRocket} className="mr-2" />
+                                        <span>Open Student</span>
+                                    </Button>
+                                )}
+                            </div>
+                        )}
+                    </CardContent>
+                </Card>
 
-
-                </div>
-                <div className="space-y-6 mx-auto p-4 mt-4 bg-white rounded-md shadow-md">
-                    <FeesTable />
-                    {/* <Tabs defaultValue="transaction" >
-                        <TabsList>
-                            <TabsTrigger value="transaction">Transaction</TabsTrigger>
-                        </TabsList>
-                        <TabsContent value="transaction">
-
-                        </TabsContent>
-                    </Tabs> */}
-
-
-                </div>
+                <Card className="mt-6 bg-white/50 backdrop-blur-sm">
+                    <CardContent >
+                        <FeesTable />
+                    </CardContent>
+                </Card>
             </ContainerLayout>
             <ConfirmationModal
                 isOpen={isConfirmationModalOpen}
@@ -287,7 +293,7 @@ const StudentDetails = () => {
                 onConfirm={deleteStudent}
                 message="Are you sure you want to remove this student?"
             />
-        </HomeLayout >
+        </HomeLayout>
     );
 };
 

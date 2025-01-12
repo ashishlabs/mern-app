@@ -1,9 +1,8 @@
 // models/song.model.ts
 import mongoose, { Schema, Document } from 'mongoose';
 
-// Define the Song interface
-interface Song extends Document {
-    id: string;
+export interface ISong {
+    _id: mongoose.Types.ObjectId;
     title: string;
     artist: string;
     album: string;
@@ -12,11 +11,10 @@ interface Song extends Document {
     coverArt: string | null;
     thumbnail: string | null;
     url: string;
-    filename:string;
+    filename: string;
 }
 
-// Define the Song schema
-const SongSchema: Schema = new Schema({
+const songSchema = new Schema<ISong>({
     title: { type: String, required: true },
     artist: { type: String},
     album: { type: String},
@@ -28,7 +26,4 @@ const SongSchema: Schema = new Schema({
     filename: { type: String },
 });
 
-// Create a Mongoose model from the schema
-const SongModel = mongoose.model<Song>('Song', SongSchema);
-
-export default SongModel;
+export default mongoose.model<ISong>('Song', songSchema);

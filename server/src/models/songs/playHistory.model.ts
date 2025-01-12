@@ -1,13 +1,16 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import { Document, Schema, model } from 'mongoose';
+import Song, { ISong } from './song.model';
 
-// Define the PlayHistory Schema
+interface IPlayHistory extends Document {
+  userId: Schema.Types.ObjectId;
+  songId: ISong & Document;  // Use the Song interface for populated documents
+  createdAt: Date;
+}
+
 const playHistorySchema = new Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  songId: { type: mongoose.Schema.Types.ObjectId, ref: 'Song', required: true },
-  playedAt: { type: Date, default: Date.now }
+  userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  songId: { type: Schema.Types.ObjectId, ref: 'Song', required: true },
+  createdAt: { type: Date, default: Date.now }
 });
 
-// Create PlayHistory model
-const PlayHistory = mongoose.model('PlayHistory', playHistorySchema);
-
-export default PlayHistory;
+export default model<IPlayHistory>('PlayHistory', playHistorySchema);

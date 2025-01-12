@@ -26,15 +26,56 @@ const TodoDetails = () => {
   const [tagInput, setTagInput] = useState("");
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [dueDate, setDueDate] = useState("");
+  const [errors, setErrors] = useState<{[key: string]: string}>({});
 
   useEffect(() => {
     fetchTags();
   }, []);
 
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+        if (e.ctrlKey || e.metaKey) {
+            switch(e.key) {
+                case 's': // Ctrl/Cmd + S to save
+                    e.preventDefault();
+                    document.getElementById('btn-create-update-todo')?.click();
+                    break;
+                case 'b': // Ctrl/Cmd + B to go back
+                    e.preventDefault();
+                    router.push(ROUTES.TODOS);
+                    break;
+            }
+        }
+        // Escape to go back
+        if (e.key === 'Escape') {
+            router.push(ROUTES.TODOS);
+        }
+    };
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, []);
 
+  const validateForm = () => {
+    const newErrors: {[key: string]: string} = {};
+    
+    if (!title.trim()) {
+      newErrors.title = 'Title is required';
+    }
+    if (!dueDate) {
+      newErrors.dueDate = 'Due date is required';
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleCreateOrUpdateTodo = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+    
     const token = localStorage.getItem("token");
     if (!token) {
       router.push(ROUTES.LOGIN);
@@ -87,9 +128,6 @@ const TodoDetails = () => {
     }
   };
 
-
-
-
   const handleTagInputChange = (event: React.FormEvent<HTMLElement>, { newValue }: { newValue: string }) => {
     setTagInput(newValue);
   };
@@ -105,7 +143,6 @@ const TodoDetails = () => {
       }
     }
   };
-
 
   const handleTagRemove = (tagToRemove: string) => {
     setTags(tags.filter(tag => tag !== tagToRemove));
@@ -162,7 +199,6 @@ const TodoDetails = () => {
 
   const renderSuggestion = (suggestion: string) => <div>{suggestion}</div>;
 
-
   useEffect(() => {
     if (id === ROUTES.CREATE_TODO) {
       setTodoToEdit(null);
@@ -180,7 +216,6 @@ const TodoDetails = () => {
     getTodoData();
   }, [id]);
   const getTodoData = async () => {
-
     const token = localStorage.getItem("token");
     if (!token) {
       router.push(ROUTES.LOGIN);
@@ -207,93 +242,168 @@ const TodoDetails = () => {
   return (
     <HomeLayout>
       <ContainerLayout>
-        <h2 className="text-lg sm:text-xl font-bold mb-4">{todoToEdit ? "Edit Task" : "Create Task"}</h2>
-        <form onSubmit={handleCreateOrUpdateTodo} onKeyDown={handleKeyDown} className="space-y-4">
+        <div className="flex justify-between items-center mb-8 border-b pb-4">
+          <h2 className="text-2xl font-semibold text-gray-800">{todoToEdit ? "Edit Task" : "Create Task"}</h2>
+          <button
+            onClick={() => router.push(ROUTES.TODOS)}
+            className="text-gray-500 hover:text-gray-700 text-sm flex items-center gap-2"
+          >
+            <span>ESC to close</span>
+            <FontAwesomeIcon icon={faTimes} />
+          </button>
+        </div>
+
+        <form onSubmit={handleCreateOrUpdateTodo} onKeyDown={handleKeyDown} className="space-y-6">
+          <div className="flex gap-3 mb-6">
+            {['low', 'medium', 'high'].map((p) => (
+              <button
+                key={p}
+                type="button"
+                onClick={() => setPriority(p)}
+                className={`flex-1 py-2.5 px-4 rounded-md transition-all text-sm font-medium ${
+                  priority === p 
+                    ? `${p === 'high' 
+                        ? 'bg-red-50 text-red-700 border-red-200' 
+                        : p === 'medium' 
+                        ? 'bg-yellow-50 text-yellow-700 border-yellow-200' 
+                        : 'bg-green-50 text-green-700 border-green-200'} border-2` 
+                    : 'bg-gray-50 text-gray-600 border border-gray-200 hover:bg-gray-100'
+                }`}
+              >
+                {p.charAt(0).toUpperCase() + p.slice(1)}
+              </button>
+            ))}
+          </div>
+
           <div className="flex flex-col">
-            <label htmlFor="title" className="text-sm font-medium text-gray-700">
-              Title
-            </label>
+            <div className="flex justify-between mb-2">
+              <label htmlFor="title" className="text-sm font-medium text-gray-700">
+                Title *
+              </label>
+              <span className="text-sm text-gray-400">
+                {title.length}/100
+              </span>
+            </div>
             <input
               type="text"
               id="title"
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              required
-              className="mt-1 p-2 border border-gray-300 rounded w-full"
+              onChange={(e) => {
+                setTitle(e.target.value);
+                setErrors({...errors, title: ''});
+              }}
+              maxLength={100}
+              placeholder="What needs to be done?"
+              className={`mt-1 p-3 border rounded-lg w-full
+                       focus:ring-2 focus:ring-blue-100 focus:border-blue-300 
+                       transition-all duration-200 ${errors.title ? 'border-red-500' : 'border-gray-200'}`}
+              autoFocus
             />
+            {errors.title && (
+              <p className="mt-1 text-sm text-red-500">{errors.title}</p>
+            )}
           </div>
+
+          <div className="flex gap-3 mb-4">
+            {['pending', 'in-progress', 'completed'].map((s) => (
+              <button
+                key={s}
+                type="button"
+                onClick={() => setStatus(s)}
+                className={`flex-1 py-2.5 px-4 rounded-md transition-all text-sm font-medium ${
+                  status === s 
+                    ? `${s === 'completed' 
+                        ? 'bg-green-50 text-green-700 border-green-200' 
+                        : s === 'in-progress' 
+                        ? 'bg-blue-50 text-blue-700 border-blue-200' 
+                        : 'bg-yellow-50 text-yellow-700 border-yellow-200'} border-2` 
+                    : 'bg-gray-50 text-gray-600 border border-gray-200 hover:bg-gray-100'
+                }`}
+              >
+                <span className="mr-2">
+                  {s === 'pending' ? '⏳' : s === 'in-progress' ? '🔄' : '✅'}
+                </span>
+                {s.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+              </button>
+            ))}
+          </div>
+
           <div className="flex flex-col">
-            <label htmlFor="description" className="text-sm font-medium text-gray-700">
-              Description
-            </label>
+            <div className="flex justify-between mb-2">
+              <label htmlFor="description" className="text-sm font-medium text-gray-700">
+                Description
+              </label>
+              <span className="text-sm text-gray-400">
+                {description.length}/500
+              </span>
+            </div>
             <textarea
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="mt-1 p-2 border border-gray-300 rounded w-full"
+              maxLength={500}
+              rows={4}
+              placeholder="Add details about your task..."
+              className="mt-1 p-3 border border-gray-200 rounded-lg w-full
+                       focus:ring-2 focus:ring-blue-100 focus:border-blue-300
+                       transition-all duration-200 resize-none"
             />
           </div>
-          <div className="flex flex-col">
-            <label htmlFor="status" className="text-sm font-medium text-gray-700">
-              Status
-            </label>
-            <select
-              id="status"
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
-              required
-              className="mt-1 p-2 border border-gray-300 rounded w-full"
-            >
-              <option value="pending">Pending</option>
-              <option value="in-progress">In Progress</option>
-              <option value="completed">Completed</option>
-            </select>
-          </div>
-          <div className="flex flex-col">
-            <label className="text-sm font-medium text-gray-700">Priority</label>
-            <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  name="priority"
-                  value="low"
-                  checked={priority === "low"}
-                  onChange={(e) => setPriority(e.target.value)}
-                  className="form-radio"
-                />
-                <span className="ml-2">Low</span>
-              </label>
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  name="priority"
-                  value="medium"
-                  checked={priority === "medium"}
-                  onChange={(e) => setPriority(e.target.value)}
-                  className="form-radio"
-                />
-                <span className="ml-2">Medium</span>
-              </label>
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  name="priority"
-                  value="high"
-                  checked={priority === "high"}
-                  onChange={(e) => setPriority(e.target.value)}
-                  className="form-radio"
-                />
-                <span className="ml-2">High</span>
-              </label>
+
+          <div className="flex flex-col space-y-2">
+            <label className="text-sm font-medium text-gray-700">Due Date *</label>
+            <div className="flex gap-2 mb-2">
+              <button
+                type="button"
+                onClick={() => setDueDate(new Date().toISOString().split('T')[0])}
+                className="px-4 py-2 text-sm bg-gray-50 rounded-md hover:bg-gray-100
+                         text-gray-600 border border-gray-200 transition-all duration-200"
+              >
+                Today
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  const tomorrow = new Date();
+                  tomorrow.setDate(tomorrow.getDate() + 1);
+                  setDueDate(tomorrow.toISOString().split('T')[0]);
+                }}
+                className="px-4 py-2 text-sm bg-gray-50 rounded-md hover:bg-gray-100
+                         text-gray-600 border border-gray-200 transition-all duration-200"
+              >
+                Tomorrow
+              </button>
             </div>
+            <DatePicker 
+              dueDate={dueDate} 
+              setDueDate={(date) => {
+                setDueDate(date);
+                setErrors({...errors, dueDate: ''});
+              }} 
+            />
+            {errors.dueDate && (
+              <p className="text-sm text-red-500">{errors.dueDate}</p>
+            )}
           </div>
-          <div className="flex flex-col">
-            <DatePicker dueDate={dueDate} setDueDate={setDueDate} />
-          </div>
-          <div className="flex flex-col">
-            <label htmlFor="tags" className="text-sm font-medium text-gray-700">
-              Tags
-            </label>
+
+          <div className="flex flex-col space-y-2">
+            <label className="text-sm font-medium text-gray-700">Tags</label>
+            <div className="flex flex-wrap gap-2 mb-2">
+              {['work', 'personal', 'urgent', 'meeting'].map(tag => (
+                !tags.includes(tag) && (
+                  <button
+                    key={tag}
+                    type="button"
+                    onClick={() => setTags([...tags, tag])}
+                    className="px-3 py-1.5 text-sm bg-gray-50 rounded-md hover:bg-gray-100
+                             text-gray-600 border border-gray-200 transition-all duration-200"
+                  >
+                    + {tag}
+                  </button>
+                )
+              ))}
+            </div>
+            
             <Autosuggest
               suggestions={suggestions}
               onSuggestionsFetchRequested={onSuggestionsFetchRequested}
@@ -301,45 +411,54 @@ const TodoDetails = () => {
               getSuggestionValue={getSuggestionValue}
               renderSuggestion={renderSuggestion}
               inputProps={{
-                placeholder: "Add a tag",
+                placeholder: "Type and press Enter to add tag",
                 value: tagInput,
                 onChange: handleTagInputChange,
                 onKeyDown: handleTagAddition,
-              }}
-              theme={{
-                input: "mt-1 p-2 border border-gray-300 rounded w-full",
-                suggestionsContainer: "absolute z-10 bg-white border border-gray-300 rounded mt-1 ",
-                suggestion: "p-2 cursor-pointer",
+                className: "w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-100 focus:border-blue-300 transition-all duration-200"
               }}
             />
+
             <div className="flex flex-wrap gap-2 mt-2">
-              {tags?.map((tag, index) => (
-                <span key={index} className="bg-gray-200 px-2 py-1 rounded-full flex items-center">
+              {tags?.map((tag) => (
+                <span key={tag} className="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-md flex items-center border border-blue-100">
                   {tag}
-                  <FontAwesomeIcon
-                    icon={faTimes}
-                    className="ml-2 cursor-pointer"
+                  <button
+                    type="button"
                     onClick={() => handleTagRemove(tag)}
-                  />
+                    className="ml-2 text-blue-400 hover:text-blue-600 transition-colors"
+                  >
+                    ×
+                  </button>
                 </span>
               ))}
             </div>
           </div>
-          <button
-            onClick={() => handleCreateOrUpdateTodo}
-            className="w-full py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-700"
-          >
-            {todoToEdit ? "Update Task" : "Create Task"}
-          </button>
+
+          <div className="flex gap-3 pt-6 border-t">
+            <button
+              id="btn-create-update-todo"
+              type="submit"
+              className="flex-1 py-2.5 px-4 bg-blue-600 text-white rounded-lg 
+                       hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500
+                       focus:ring-offset-2 transition-all duration-200 font-medium"
+            >
+              {todoToEdit ? "Update Task (Ctrl + S)" : "Create Task (Ctrl + S)"}
+            </button>
+            {todoToEdit && (
+              <button
+                type="button"
+                onClick={() => setIsConfirmationModalOpen(true)}
+                className="py-2.5 px-4 bg-red-50 text-red-600 rounded-lg 
+                         hover:bg-red-100 focus:outline-none focus:ring-2 
+                         focus:ring-red-500 focus:ring-offset-2 transition-all
+                         duration-200 font-medium border border-red-200"
+              >
+                Delete
+              </button>
+            )}
+          </div>
         </form>
-        {todoToEdit && (
-          <button
-            onClick={() => setIsConfirmationModalOpen(true)}
-            className="w-full py-2 px-4 bg-red-500 mt-2 text-white rounded hover:bg-red-700"
-          >
-            Delete
-          </button>
-        )}
       </ContainerLayout>
       <ConfirmationModal
         isOpen={isConfirmationModalOpen}

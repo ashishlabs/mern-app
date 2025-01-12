@@ -11,4 +11,10 @@ export interface Song {
     thumbnail: string | null;
     url: string;
     fileName:string;
+    playCount?: number;
+    albumName?: string;
+    isTopPlayed?: boolean;
+    albumArt?: string;
+    explicit?: boolean;
 }
+

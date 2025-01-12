@@ -120,49 +120,60 @@ const FeesTable = () => {
     };
 
     return (
-        <div className="max-w-6xl mx-auto  bg-white">
-            <div className="flex justify-between items-center mb-6">
-                <h1 className="text-xl font-semibold">Transactions</h1>
+        <div className="max-w-6xl mx-auto bg-gray-50 p-6 rounded-lg">
+            <div className="flex justify-between items-center mb-8">
+                <h1 className="text-2xl font-semibold text-gray-800">Transactions</h1>
                 <Button
                     onClick={() => openModal()}
                     variant="primary-subtle"
                     size="sm"
+                    className="hover:scale-105 transition-transform"
                 >
-                    <FontAwesomeIcon icon={faPlus} /> Add
+                    <FontAwesomeIcon icon={faPlus} className="mr-2" /> Add Transaction
                 </Button>
             </div>
 
             {fees.length ? (
-                <div className="grid grid-cols-1 gap-4">
+                <div className="grid grid-cols-1 gap-5">
                     {fees.map((fee) => (
                         <div
                             key={fee._id}
-                            className="group p-4 border rounded-md shadow-sm hover:shadow-lg transition-shadow"
+                            className="group p-6 border border-gray-100 rounded-lg bg-white shadow-sm 
+                                     hover:shadow-md transition-all duration-300 relative"
                         >
-                            <div className="flex justify-between items-center mb-4">
-                                <div>
-                                    <p className="font-medium">Amount Paid: ₹{fee.amountPaid}</p>
-                                    <p className="text-sm text-gray-500">
-                                        Payment Method: {fee.paymentMethod}
+                            <div className="flex justify-between items-center">
+                                <div className="space-y-2">
+                                    <p className="font-medium text-lg text-gray-800">
+                                        ₹{fee.amountPaid.toLocaleString('en-IN')}
                                     </p>
-                                    <p className="text-sm text-gray-500">
-                                        Payment Date: {format(fee.paymentDate, "PPP")}
-                                    </p>
+                                    <div className="space-y-1">
+                                        <p className="text-sm text-gray-600 flex items-center">
+                                            <span className="w-32">Payment Method:</span>
+                                            <span className="font-medium">{fee.paymentMethod}</span>
+                                        </p>
+                                        <p className="text-sm text-gray-600 flex items-center">
+                                            <span className="w-32">Payment Date:</span>
+                                            <span className="font-medium">{format(fee.paymentDate, "PPP")}</span>
+                                        </p>
+                                    </div>
                                 </div>
-                                <div className="flex space-x-2  opacity-100  sm:opacity-0  group-hover:opacity-100">
+                                <div className="flex space-x-3 opacity-0 group-hover:opacity-100 
+                                            transition-opacity duration-200 absolute right-6">
                                     <Button
                                         onClick={() => openModal(fee)}
                                         variant="primary-subtle"
                                         size="sm"
+                                        className="hover:bg-blue-50"
                                     >
-                                        <FontAwesomeIcon icon={faEdit} />
+                                        <FontAwesomeIcon icon={faEdit} className="text-blue-600" />
                                     </Button>
                                     <Button
                                         onClick={() => deleteFees(fee._id)}
                                         variant="destructive-subtle"
                                         size="sm"
+                                        className="hover:bg-red-50"
                                     >
-                                        <FontAwesomeIcon icon={faTrashAlt} />
+                                        <FontAwesomeIcon icon={faTrashAlt} className="text-red-600" />
                                     </Button>
                                 </div>
                             </div>
@@ -170,15 +181,19 @@ const FeesTable = () => {
                     ))}
                 </div>
             ) : (
-                <p className="text-gray-500">No fees records found.</p>
+                <div className="text-center py-12 bg-white rounded-lg border border-gray-100">
+                    <p className="text-gray-500">No transaction records found.</p>
+                </div>
             )}
 
             {/* Modal */}
             {isModalOpen && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white p-6 rounded-lg shadow-lg w-11/12 md:w-2/3 lg:w-1/2">
-                        <h2 className="text-lg font-semibold mb-4">
-                            {modalFee._id ? "Edit Fee" : "Add New Fee"}
+                <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 
+                               backdrop-blur-sm transition-all duration-300">
+                    <div className="bg-white p-8 rounded-xl shadow-xl w-11/12 md:w-2/3 lg:w-1/2 
+                                  transform transition-all duration-300">
+                        <h2 className="text-xl font-semibold mb-6 text-gray-800">
+                            {modalFee._id ? "Edit Transaction" : "Add New Transaction"}
                         </h2>
                         <div className="grid gap-4">
                             <LabsField
@@ -204,20 +219,22 @@ const FeesTable = () => {
                                 fieldType="date"
                             />
                         </div>
-                        <div className="flex justify-end mt-6 space-x-4">
+                        <div className="flex justify-end mt-8 space-x-4">
                             <Button
                                 onClick={closeModal}
                                 size="sm"
                                 variant="secondary-subtle"
+                                className="hover:bg-gray-100"
                             >
-                                <FontAwesomeIcon icon={faTimes} /> Cancel
+                                <FontAwesomeIcon icon={faTimes} className="mr-2" /> Cancel
                             </Button>
                             <Button
                                 onClick={handleModalSave}
                                 variant="primary-subtle"
                                 size="sm"
+                                className="hover:bg-blue-50"
                             >
-                                <FontAwesomeIcon icon={faSave} /> Save
+                                <FontAwesomeIcon icon={faSave} className="mr-2" /> Save
                             </Button>
                         </div>
                     </div>
